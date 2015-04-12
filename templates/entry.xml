@@ -3,7 +3,7 @@
     <?php $pk = $entry[$pk_column]; ?>
     <id>http://<?php echo $service_base_path; ?><?php echo $current_collection; ?>(<?php echo $pk; ?>)</id>
     <title type="text"></title>
-    <updated>2015-03-26T21:49:03Z</updated>
+    <updated><?php echo $updated; ?></updated>
     <author>
       <name />
     </author>

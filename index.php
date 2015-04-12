@@ -1,11 +1,17 @@
 <?php
+
+  error_reporting(E_ALL);
+  ini_set( 'display_errors','1'); 
+
+  require 'Config.class.php';
   require 'AltoRouter.php';
   require 'Controller.class.php';
+
   
   $router = new AltoRouter();
-  $router->setBasePath('/ODataTest');
+  $router->setBasePath(Config::get_subdir());
   
-  $controller = new Controller('slup.ch', '/ODataTest/', 'ODataTest', 'ODataTest.sqlite');
+  $controller = new Controller(Config::get_host(), Config::get_subdir(), Config::get_model_name(), Config::get_database_path());
   
   $router->map( 'GET', '/', function() use ($controller) { $controller->service_description(); });
   $router->map( 'GET', '/[\$metadata:cmd]', function() use ($controller) { $controller->service_metadata(); });
@@ -15,6 +21,7 @@
   $router->map( 'GET', '/[a:collection]/[\$count:count]', function($collection) use ($controller) { $controller->count_collection($collection); });
   
   $match = $router->match();
+  
   
   if( $match && is_callable( $match['target'] ) ) {
     call_user_func_array( $match['target'], $match['params'] ); 

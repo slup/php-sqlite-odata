@@ -2,14 +2,14 @@
 <feed xml:base="http://<?php echo $service_base_path; ?>" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
   <title type="text"><?php echo $current_collection; ?></title>
   <id>http://<?php echo $service_base_path; ?><?php echo $current_collection; ?></id>
-  <updated>2015-03-26T21:49:03Z</updated>
+  <updated><?php echo $updated; ?></updated>
   <link rel="self" title="<?php echo $current_collection; ?>" href="<?php echo $current_collection; ?>" />
   <?php foreach($entries as $entry): ?>
   <entry>
     <?php $pk = $entry[$pk_column]; ?>
     <id>http://<?php echo $service_base_path; ?><?php echo $current_collection; ?>(<?php echo $pk; ?>)</id>
     <title type="text"></title>
-    <updated>2015-03-26T21:49:03Z</updated>
+    <updated><?php echo $updated; ?></updated>
     <author>
       <name />
     </author>

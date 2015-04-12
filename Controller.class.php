@@ -10,12 +10,24 @@ class Controller {
 	private $host = '';
 	private $model_name = '';
 	private $database = '';
+	private $service_base_path = '';
+	
 
 	public function __construct($host='localhost', $subdir='', $model_name='', $database='') {
 		$this->host = $host;
-		$this->subdir = $subdir;
+		$this->subdir = $this->add_trailings_slash($subdir);
 		$this->model_name = $model_name;
 		$this->database = $database;
+		$this->service_base_path = $this->host . $this->subdir;
+		
+	}
+	
+	private function add_trailings_slash($path) {
+		if (substr($path, -1) === '/') {
+			return $path;
+		} else {
+			return $path . '/';
+		}
 	}
 
 	public function service_description() {
@@ -54,8 +66,9 @@ class Controller {
 		
 		if ($dba->table_exists($collection)) {
 			$template->current_collection = $collection;
-			$template->service_base_path = $this->host . $this->subdir;
+			$template->service_base_path = $this->service_base_path;
 			$template->model_name = $this->model_name;
+			$template->updated = gmdate('c');
 			
 			$columns = $dba->get_columns($collection);
 			
@@ -85,8 +98,9 @@ class Controller {
 		
 		if ($dba->table_exists($collection)) {
 			$template->current_collection = $collection;
-			$template->service_base_path = $this->host . $this->subdir;
+			$template->service_base_path = $this->service_base_path;
 			$template->model_name = $this->model_name;
+			$template->updated = gmdate('c');
 			
 			$columns = $dba->get_columns($collection);
 			
