@@ -19,6 +19,7 @@
   $router->map( 'GET', '/[a:collection]/', function($collection) use ($controller) { $controller->serve_collection($collection); });
   $router->map( 'GET', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->serve_entry($collection, $id); });
   $router->map( 'GET', '/[a:collection]/[\$count:count]', function($collection) use ($controller) { $controller->count_collection($collection); });
+  $router->map( 'PUT', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->update_entry($collection, $id); });
   
   $match = $router->match();
   

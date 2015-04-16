@@ -7,11 +7,12 @@ Copy alongside a sqlite database and edit Config.class.php
 ## Limitations
 * Only single tables with one primary key
 * Tablename = Collectionname
-* Read-only (for now)
+* Read, Update
+* Edm Datatypes
+** Int32, String, Boolean
 
 ## Roadmap
 * Create
-* Update
 * Delete
 * Navigation properties based on foreign keys
 

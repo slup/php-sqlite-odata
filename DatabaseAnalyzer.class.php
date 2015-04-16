@@ -70,6 +70,61 @@ class DatabaseAnalyzer {
 			return $count;
 		}
 	}
+	
+	public function table_update($table_name, $new_values) {
+		$query = "";
+		if ($this->table_exists($table_name)) {
+			$columns = $this->get_columns($table_name);
+			
+			$pk_column = "";
+			foreach ($columns as $column) {
+				if (1 == $column['pk']) {
+					$pk_column = $column['name'];
+					break;
+				}
+			}
+			
+			if (!array_key_exists($pk_column, $new_values)) {
+				echo "ERROR: No primary key";
+				return;
+			}
+			
+			$query = "UPDATE ${table_name} SET ";
+			$update_values = array();
+			
+			foreach($columns as $column) {
+				$name = $column['name'];
+				if ($name === $pk_column) {
+					continue;
+				}
+				
+				if (array_key_exists($name, $new_values)) {
+					$query .= "${name} = ?, ";
+					if ($column['type'] == 'BOOL') {
+						$update_values[] = $this->parseBoolean($new_values[$name]); 
+					} else {
+						$update_values[] = $new_values[$name];
+					}
+				} else {
+					continue;
+				}
+			}
+			
+			$query = rtrim($query, ', ');
+			
+			$query .= " WHERE ${pk_column} = ?";
+			$update_values[] = $new_values[$pk_column];
+			
+			$result = $this->database->prepare($query);
+			$result->execute($update_values);
+			
+			http_response_code(204);
+		}
+	}
+	
+	private function parseBoolean($string) {
+	   return ($string && strtolower($string) === "true") ? 1 : 0;
+	}
 }
 
 ?>
