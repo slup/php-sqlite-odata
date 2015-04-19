@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge' />
+	<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+	
+	<title>UI5: Multiline String</title>
+	
+	<script id='sap-ui-bootstrap' type='text/javascript'
+		src='../../../openui5/resources/sap-ui-core.js'
+		data-sap-ui-theme='sap_bluecrystal'
+		data-sap-ui-xx-bindingSyntax='complex'
+		data-sap-ui-libs='sap.m, sap.ui.commons'>
+	</script>
+	
+	<script>
+		
+		sap.ui.controller("ch.slup.simpleclient", {
+			
+			addEntry : function(oEvent) {
+				var oNewModel = this.getView().getModel('newModel');
+				var sItem = oNewModel.getProperty('/newItem');
+				var bDone = oNewModel.getProperty('/newDone');
+				
+				var oModel = this.getView().getModel();
+				var oNewData = {
+					"item" : sItem,
+					"done" : bDone,
+				}
+				
+				console.log(this.getView().byId('todoList'));
+				var sPath = this.getView().byId('todoList').getBindingInfo('items').path;
+				
+				oModel.create(sPath, oNewData, null, function(){
+						console.log("Create successful");
+					},function(){
+						console.log("Create failed");
+					}
+				);
+			},
+			
+			updateEntry : function(oEvent) {
+			
+				var oModel = this.getView().getModel();
+				var sPath = oEvent.getSource().getBindingContext().getPath();
+				var oData = oModel.getProperty(sPath);
+				
+				var oUpdatedItem = this.getView().byId('updatedItem');
+				var oUpdatedDone = this.getView().byId('updatedDone');
+				
+				
+				oNewData = {}
+				oNewData.id = oData.id;
+				oNewData.item = oUpdatedItem.getValue();
+				oNewData.done = oUpdatedDone.getSelected();
+				
+				oModel.update(sPath, oNewData, null, function(){
+						console.log("Update successful");
+					},function(){
+						console.log("Update failed");
+					}
+				);
+			
+				var oApp = this.getView().byId('theApp');
+				oApp.back(null, null);
+			},
+			
+			todoItemSelected : function(oEvent) {
+				var oApp = this.getView().byId('theApp');
+				var oDetailPage = this.getView().byId('detail');
+				
+				oDetailPage.setBindingContext(oEvent.getSource().getBindingContext());
+				
+				oApp.to(oDetailPage, 'slide', null, null);
+			},
+			
+			detailBackPressed : function(oEvent) {
+				var oApp = this.getView().byId('theApp');
+				oApp.back(null, null);
+			}
+		});
+		
+		
+var xml = '<mvc:View'
++ '  controllerName="ch.slup.simpleclient"'
++ '  xmlns:mvc="sap.ui.core.mvc"'
++ '  xmlns:form="sap.ui.layout.form"'
++ '  xmlns="sap.m">'
++ '  <App id="theApp">'
++ '	<Page id="master" title="Todos">'
++ '	  <Input'
++ '		value="{newModel>/newItem}"'
++ '		description="Todo"'
++ '		width="250px"'
++ '		fieldWidth="80%" />'
++ '	  <CheckBox text="Done?" selected="{newModel>/newDone}" />'
++ '	  <Button'
++ '		icon="sap-icon://add"'
++ '		text="Add"'
++ '		press="addEntry" />'
++ '	  <List id="todoList" items="{/Todo}" >'
++ '		<items>'
++ '		  <StandardListItem'
++ '			title="{item}"'
++ '			description="{done}"'
++ '			icon="{sap-icon://add}"'
++ '			type="Navigation" press="todoItemSelected" />'
++ '		</items>'
++ '	  </List>'
++ '	</Page>'
++ '	<Page id="detail" title="Todo (id:{id})" showNavButton="true" navButtonPress="detailBackPressed">'
++ '	  <form:SimpleForm'
++ '		title="Details for {item}">'
++ '		<Label text="Item"/>'
++ '		<Input id="updatedItem" value="{item}"/>'
++ '		<Label text="Done?"/>'
++ '		<CheckBox id="updatedDone" selected="{done}"/>'
++ '		<Button'
++ '		  icon="sap-icon://accept"'
++ '		  text="Save"'
++ '		  press="updateEntry" />'
++ '	  </form:SimpleForm>'
++ '	</Page>'
++ '  </App>'
++ '</mvc:View>'
+		
+		var simpleView = sap.ui.xmlview({viewContent:xml});
+		
+		var oNewModelData = {
+			newItem: "",
+			newDone: false
+		};
+		
+		var oNewModel = new sap.ui.model.json.JSONModel();
+		oNewModel.setData(oNewModelData);
+		simpleView.setModel(oNewModel, 'newModel');
+		
+		var oModel = new sap.ui.model.odata.ODataModel('/ODataTest/');
+		//oModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
+		simpleView.setModel(oModel);
+		
+		simpleView.placeAt('content');
+	</script>
+	
+	</head>
+	<body class='sapUiBody'>
+		<div id='content'></div>
+	</body>
+</html>

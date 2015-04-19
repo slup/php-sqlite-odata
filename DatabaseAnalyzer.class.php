@@ -1,4 +1,5 @@
 <?php
+require_once 'Constant.class.php';
 
 class DatabaseAnalyzer {
 
@@ -71,18 +72,24 @@ class DatabaseAnalyzer {
 		}
 	}
 	
+	private function get_table_pk_column($table_name) {
+		if ($this->table_exists($table_name)) {
+			$columns = $this->get_columns($table_name);
+			
+			foreach ($columns as $column) {
+				if (1 == $column['pk']) {
+					return $column['name'];
+				}
+			}
+		}
+	}
+	
 	public function table_update($table_name, $new_values) {
 		$query = "";
 		if ($this->table_exists($table_name)) {
 			$columns = $this->get_columns($table_name);
 			
-			$pk_column = "";
-			foreach ($columns as $column) {
-				if (1 == $column['pk']) {
-					$pk_column = $column['name'];
-					break;
-				}
-			}
+			$pk_column = $this->get_table_pk_column($table_name);
 			
 			if (!array_key_exists($pk_column, $new_values)) {
 				echo "ERROR: No primary key";
@@ -100,11 +107,12 @@ class DatabaseAnalyzer {
 				
 				if (array_key_exists($name, $new_values)) {
 					$query .= "${name} = ?, ";
-					if ($column['type'] == 'BOOL') {
-						$update_values[] = $this->parseBoolean($new_values[$name]); 
-					} else {
-						$update_values[] = $new_values[$name];
-					}
+					$update_values[] = DataConverter::odata2Database($column, $new_values[$name]);
+					// if ($column['type'] == 'BOOL') {
+						// $update_values[] = $this->parseBoolean($new_values[$name]); 
+					// } else {
+						// $update_values[] = $new_values[$name];
+					// }
 				} else {
 					continue;
 				}
@@ -118,8 +126,13 @@ class DatabaseAnalyzer {
 			$result = $this->database->prepare($query);
 			$result->execute($update_values);
 			
-			http_response_code(204);
+			return true;
 		}
+		
+		return false;
+	}
+	
+	public function entry_create($table_name, $new_values) {
 	}
 	
 	private function parseBoolean($string) {

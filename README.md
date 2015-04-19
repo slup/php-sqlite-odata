@@ -9,7 +9,7 @@ Copy alongside a sqlite database and edit Config.class.php
 * Tablename = Collectionname
 * Read, Update
 * Edm Datatypes
-** Int32, String, Boolean
+  * Int32, String, Boolean
 
 ## Roadmap
 * Create
@@ -22,7 +22,7 @@ Using [AltoRouter](https://github.com/dannyvankooten/AltoRouter) for routing
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2015 Werner Schwarz
+Copyright (c) 2015 Werner Schwarz, Patrick Wenger
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
