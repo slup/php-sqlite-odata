@@ -125,7 +125,6 @@ class Controller {
 	}
 	
 	public function update_entry($collection, $id) {
-		$template = new Template();
 		$dba = new DatabaseAnalyzer($this->database);
 		
 		if ($dba->table_exists($collection)) {
@@ -139,8 +138,38 @@ class Controller {
 				$new_properties[$tag] = $value.'';
 			}
 			
-			$dba->table_update($collection, $new_properties);
+			$successful = $dba->table_update($collection, $new_properties);
+			if ($successful) {
+				http_response_code(204);
+			} else {
+				http_response_code(400); // general error, for now
+			}
 		}
+	}
+	
+	public function create_entry($collection) {
+		$dba = new DatabaseAnalyzer($this->database);
+		
+		if ($dba->table_exists($collection)) {
+			$body = file_get_contents("php://input");
+			$xml = new SimpleXMLElement($body);
+			
+			$namespaces = $xml->getNamespaces(true);
+			$entry = $xml->xpath('//*[local-name() = \'properties\']')[0];
+			$new_properties = array();
+			foreach($entry->children($namespaces['d']) as $tag => $value) {
+				$new_properties[$tag] = $value.'';
+			}
+			
+			$successful = $dba->entry_create($collection, $new_properties);
+			
+			if ($successful) {
+				http_response_code(201);
+			} else {
+				http_response_code(400); // general error, for now
+			}
+		}
+		
 	}
 	
 	public function count_collection($collection) {
