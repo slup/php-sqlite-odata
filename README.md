@@ -5,16 +5,16 @@ Publish a sqlite database as an OData REST-service.
 Copy alongside a sqlite database and edit Config.class.php
 
 ## Limitations
-* Only single tables with one primary key
-* Tablename = Collectionname
-* Read, Update
+* Only single tables with one (integer) primary key
+* Table name = collection name
+* CRUD (Create, Read, Update, Delete)
 * Edm Datatypes
   * Int32, String, Boolean
 
 ## Roadmap
-* Create
-* Delete
 * Navigation properties based on foreign keys
+* Use sqlite rowid as primary key
+* Additional datatypes
 
 ## Dependencies
 Using [AltoRouter](https://github.com/dannyvankooten/AltoRouter) for routing

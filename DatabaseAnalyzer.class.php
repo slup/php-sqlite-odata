@@ -84,59 +84,111 @@ class DatabaseAnalyzer {
 		}
 	}
 	
-	public function table_update($table_name, $new_values) {
+	public function entry_update($table_name, $new_values) {
 		$query = "";
-		if ($this->table_exists($table_name)) {
-			$columns = $this->get_columns($table_name);
-			
-			$pk_column = $this->get_table_pk_column($table_name);
-			
-			if (!array_key_exists($pk_column, $new_values)) {
-				echo "ERROR: No primary key";
-				return;
-			}
-			
-			$query = "UPDATE ${table_name} SET ";
-			$update_values = array();
-			
-			foreach($columns as $column) {
-				$name = $column['name'];
-				if ($name === $pk_column) {
-					continue;
-				}
-				
-				if (array_key_exists($name, $new_values)) {
-					$query .= "${name} = ?, ";
-					$update_values[] = DataConverter::odata2Database($column, $new_values[$name]);
-					// if ($column['type'] == 'BOOL') {
-						// $update_values[] = $this->parseBoolean($new_values[$name]); 
-					// } else {
-						// $update_values[] = $new_values[$name];
-					// }
-				} else {
-					continue;
-				}
-			}
-			
-			$query = rtrim($query, ', ');
-			
-			$query .= " WHERE ${pk_column} = ?";
-			$update_values[] = $new_values[$pk_column];
-			
-			$result = $this->database->prepare($query);
-			$result->execute($update_values);
-			
-			return true;
+		if (!$this->table_exists($table_name)) {
+			return false;
 		}
 		
-		return false;
+		$columns = $this->get_columns($table_name);
+		
+		$pk_column = $this->get_table_pk_column($table_name);
+		
+		if (!array_key_exists($pk_column, $new_values)) {
+			echo "ERROR: No primary key";
+			return;
+		}
+		
+		$query = "UPDATE ${table_name} SET ";
+		$update_values = array();
+		
+		foreach($columns as $column) {
+			$name = $column['name'];
+			if ($name === $pk_column) {
+				continue;
+			}
+			
+			if (array_key_exists($name, $new_values)) {
+				$query .= "${name} = ?, ";
+				$update_values[] = DataConverter::odata2Database($column, $new_values[$name]);
+			} else {
+				continue;
+			}
+		}
+		
+		$query = rtrim($query, ', ');
+		
+		$query .= " WHERE ${pk_column} = ?";
+		$update_values[] = $new_values[$pk_column];
+		
+		$result = $this->database->prepare($query);
+		$result->execute($update_values);
+		
+		return true;
 	}
 	
 	public function entry_create($table_name, $new_values) {
+		$query = "";
+		if (!$this->table_exists($table_name)) {
+			return false;
+		}
+		
+		$columns = $this->get_columns($table_name);
+		
+		$pk_column = $this->get_table_pk_column($table_name);
+		
+		if (!array_key_exists($pk_column, $new_values) 
+				|| strlen($new_values[$pk_column]) < 1) {
+			$new_values[$pk_column] = $this->table_get_next_key($table_name, $pk_column);
+		}
+		
+		$insert_values = array();
+		$query = "INSERT INTO ${table_name} ( ";
+		
+		foreach($columns as $column) {
+			$name = $column['name'];
+			
+			if (array_key_exists($name, $new_values)) {
+				$query .= "${name}, ";
+				$insert_values[] = DataConverter::odata2Database($column, $new_values[$name]);
+			} else {
+				continue;
+			}
+		}
+		
+		$query = rtrim($query, ', ');
+		$query .= " ) VALUES ( ";
+		foreach($columns as $column) {
+			$query .= "?, ";
+		}
+		$query = rtrim($query, ', ');
+		$query .= " )";
+		
+		$result = $this->database->prepare($query);
+		$result->execute($insert_values);
+		
+		return true;
 	}
 	
-	private function parseBoolean($string) {
-	   return ($string && strtolower($string) === "true") ? 1 : 0;
+	public function entry_delete($table_name, $id) {
+		if (!$this->table_exists($table_name)) {
+			return false;
+		}
+		$pk_column = $this->get_table_pk_column($table_name);
+		
+		$result = $this->database->prepare("DELETE FROM ${table_name} WHERE ${pk_column} = ?");
+		$result->execute(array($id));
+		return true;
+	}
+	
+	private function table_get_next_key($table_name, $pk_column) {
+		if ($this->table_exists($table_name)) {
+			$result = $this->database->prepare("SELECT MAX(${pk_column}) FROM ${table_name}");
+			$result->execute();
+			
+			$count = $result->fetch(PDO::FETCH_COLUMN, 0);
+			return ($count + 1);
+		}	
 	}
 }
 

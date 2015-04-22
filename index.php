@@ -22,6 +22,7 @@
   $router->map( 'PUT', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->update_entry($collection, $id); });
   $router->map( 'POST', '/[a:collection]', function($collection) use ($controller) { $controller->create_entry($collection); });
   $router->map( 'POST', '/[a:collection]/', function($collection) use ($controller) { $controller->create_entry($collection); });
+  $router->map( 'DELETE', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->delete_entry($collection, $id); });
   
   $match = $router->match();
   

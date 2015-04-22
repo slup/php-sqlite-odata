@@ -4,7 +4,7 @@
 	<meta http-equiv='X-UA-Compatible' content='IE=edge' />
 	<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
 	
-	<title>UI5: Multiline String</title>
+	<title>UI5: Simple php-sqlite-odata testclient</title>
 	
 	<script id='sap-ui-bootstrap' type='text/javascript'
 		src='../../../openui5/resources/sap-ui-core.js'
@@ -16,6 +16,26 @@
 	<script>
 		
 		sap.ui.controller("ch.slup.simpleclient", {
+			
+			onInit : function() {
+				// set initial ui configuration model
+				oCfgModel = new sap.ui.model.json.JSONModel({});
+				this.getView().setModel(oCfgModel, "cfg");
+				this._toggleCfgModel();
+			},
+			
+			_toggleCfgModel : function () {
+				var oCfgModel = this.getView().getModel("cfg");
+				var oData = oCfgModel.getData();
+				var bDataNoSetYet = !oData.hasOwnProperty("inDelete");
+				var bInDelete = (bDataNoSetYet) ? true : oData.inDelete;
+
+				oCfgModel.setData({
+					inDelete : !bInDelete,
+					notInDelete : bInDelete,
+					listMode : (!bInDelete) ? "Delete" : "None",
+				});
+			},
 			
 			addEntry : function(oEvent) {
 				var oNewModel = this.getView().getModel('newModel');
@@ -33,6 +53,8 @@
 				
 				oModel.create(sPath, oNewData, null, function(){
 						console.log("Create successful");
+						oNewModel.setProperty('/newItem', '');
+						oNewModel.setProperty('/newDone', false);
 					},function(){
 						console.log("Create failed");
 					}
@@ -54,15 +76,39 @@
 				oNewData.item = oUpdatedItem.getValue();
 				oNewData.done = oUpdatedDone.getSelected();
 				
-				oModel.update(sPath, oNewData, null, function(){
-						console.log("Update successful");
-					},function(){
-						console.log("Update failed");
+				oModel.update(sPath, oNewData, 
+					{ 
+						success: function(){
+							console.log("Update successful");
+						},
+						error: function() {
+							console.log("Update failed");
+						}
 					}
 				);
 			
 				var oApp = this.getView().byId('theApp');
 				oApp.back(null, null);
+			},
+			
+			deleteEntry : function(oEvent) {
+				var oModel = this.getView().getModel();
+				var sPath = oEvent.getParameters().listItem.getBindingContext().getPath();
+				
+				oModel.remove(sPath, 
+					{ 
+						success: function(){
+							console.log("Delete successful");
+						},
+						error: function() {
+							console.log("Delete failed");
+						}
+					}
+				);
+			},
+			
+			onEditOrDoneButtonPress : function (oEvent) {
+				this._toggleCfgModel();
 			},
 			
 			todoItemSelected : function(oEvent) {
@@ -88,41 +134,84 @@ var xml = '<mvc:View'
 + '  xmlns="sap.m">'
 + '  <App id="theApp">'
 + '	<Page id="master" title="Todos">'
-+ '	  <Input'
-+ '		value="{newModel>/newItem}"'
-+ '		description="Todo"'
-+ '		width="250px"'
-+ '		fieldWidth="80%" />'
-+ '	  <CheckBox text="Done?" selected="{newModel>/newDone}" />'
-+ '	  <Button'
-+ '		icon="sap-icon://add"'
-+ '		text="Add"'
-+ '		press="addEntry" />'
-+ '	  <List id="todoList" items="{/Todo}" >'
-+ '		<items>'
-+ '		  <StandardListItem'
-+ '			title="{item}"'
-+ '			description="{done}"'
-+ '			icon="{sap-icon://add}"'
-+ '			type="Navigation" press="todoItemSelected" />'
-+ '		</items>'
-+ '	  </List>'
++ '	  <headerContent>'
++ '		<Button'
++ '			id="editButton"'
++ '			icon="sap-icon://edit"'
++ '			visible="{cfg>/notInDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '		<Button'
++ '			id="doneButton"'
++ '			icon="sap-icon://accept"'
++ '			visible="{cfg>/inDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '	  </headerContent>'
++ '	  <content>'
++ '		<Panel headerText="Add todo" expanded="false" expandable="true">'
++ '			<form:SimpleForm'
++ '				minWidth="800"'
++ '				maxContainerCols="2"'
++ '				editable="true"'
++ '				layout="ResponsiveGridLayout"'
++ '				labelSpanL="3"'
++ '				labelSpanM="3"'
++ '				emptySpanL="4"'
++ '				emptySpanM="4"'
++ '				columnsL="1"'
++ '				columnsM="1"'
++ '				class="editableForm">'
++ '				<form:content>'
++ '					<Input'
++ '					  value="{newModel>/newItem}"'
++ '					  placeholder="Todo text"/>'
++ '					<CheckBox text="Done?" selected="{newModel>/newDone}" />'
++ '					<Button'
++ '					  icon="sap-icon://add"'
++ '					  text="Add"'
++ '					  press="addEntry" />'
++ '				</form:content>'
++ '			</form:SimpleForm>'
++ '		</Panel>'
++ '		<List id="todoList" items="{/Todo}" delete="deleteEntry" mode="{cfg>/listMode}" >'
++ '		  <items>'
++ '			<StandardListItem'
++ '			  title="{item}"'
++ '			  description="{done}"'
++ '			  icon="{sap-icon://add}"'
++ '			  type="Navigation" press="todoItemSelected" />'
++ '		  </items>'
++ '		</List>'
++ '	  </content>'
 + '	</Page>'
 + '	<Page id="detail" title="Todo (id:{id})" showNavButton="true" navButtonPress="detailBackPressed">'
 + '	  <form:SimpleForm'
-+ '		title="Details for {item}">'
-+ '		<Label text="Item"/>'
-+ '		<Input id="updatedItem" value="{item}"/>'
-+ '		<Label text="Done?"/>'
-+ '		<CheckBox id="updatedDone" selected="{done}"/>'
-+ '		<Button'
-+ '		  icon="sap-icon://accept"'
-+ '		  text="Save"'
-+ '		  press="updateEntry" />'
++ '		title="Details for {item}"'
++ '		minWidth="800"'
++ '		maxContainerCols="2"'
++ '		editable="true"'
++ '		layout="ResponsiveGridLayout"'
++ '		labelSpanL="3"'
++ '		labelSpanM="3"'
++ '		emptySpanL="4"'
++ '		emptySpanM="4"'
++ '		columnsL="1"'
++ '		columnsM="1"'
++ '		class="editableForm">'
++ '		  <form:content>'
++ '			<Label text="Item"/>'
++ '			<Input id="updatedItem" value="{item}"/>'
++ '			<Label text="Done?"/>'
++ '			<CheckBox id="updatedDone" selected="{done}"/>'
++ '			<Button'
++ '			  icon="sap-icon://accept"'
++ '			  text="Save"'
++ '			  press="updateEntry" />'
++ '		  </form:content>'
 + '	  </form:SimpleForm>'
 + '	</Page>'
 + '  </App>'
 + '</mvc:View>'
+
 		
 		var simpleView = sap.ui.xmlview({viewContent:xml});
 		
@@ -136,7 +225,6 @@ var xml = '<mvc:View'
 		simpleView.setModel(oNewModel, 'newModel');
 		
 		var oModel = new sap.ui.model.odata.ODataModel('/ODataTest/');
-		//oModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
 		simpleView.setModel(oModel);
 		
 		simpleView.placeAt('content');
