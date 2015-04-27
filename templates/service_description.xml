@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?php echo '<?xml version="1.0"'; ?> encoding="utf-8"?>
 <service xml:base="http://<?php echo $host; ?><?php echo $subdir; ?>" xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:m="http://docs.oasis-open.org/odata/ns/metadata" m:context="http://<?php echo $host; ?><?php echo $subdir; ?>$metadata">
 	<workspace>
 		<atom:title type="text"><?php echo $title; ?></atom:title>

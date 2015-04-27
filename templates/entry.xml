@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?php echo '<?xml version="1.0"'; ?> encoding="utf-8"?>
   <entry xml:base="http://<?php echo $service_base_path; ?>" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
     <?php $pk = $entry[$pk_column]; ?>
     <id>http://<?php echo $service_base_path; ?><?php echo $current_collection; ?>(<?php echo $pk; ?>)</id>
