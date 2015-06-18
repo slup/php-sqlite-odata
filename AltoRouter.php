@@ -40,7 +40,7 @@ class AltoRouter {
 	 * Add multiple routes at once from array in the following format:
 	 *
 	 *   $routes = array(
-	 *      array($method, $route, $target, $name)
+	 *	  array($method, $route, $target, $name)
 	 *   );
 	 *
 	 * @param array $routes
@@ -151,6 +151,7 @@ class AltoRouter {
 
 		$params = array();
 		$match = false;
+		$query_string_parameters = array();
 
 		// set Request Url if it isn't passed as parameter
 		if($requestUrl === null) {
@@ -162,6 +163,20 @@ class AltoRouter {
 
 		// Strip query string (?a=b) from Request Url
 		if (($strpos = strpos($requestUrl, '?')) !== false) {
+			
+			$query_strings = substr($requestUrl, $strpos + 1);
+			if (strlen($query_strings) > 0) {
+				$query_array = explode('&', $query_strings);
+				foreach($query_array as $query_string_part) {
+					if (strpos($query_string_part, '=') !== false) {
+						list($key, $value) = explode('=', $query_string_part);
+						$query_string_parameters[$key] = $value;
+					} else {
+						$query_string_parameters[$query_string_part] = "";
+					}
+				}
+			}
+			
 			$requestUrl = substr($requestUrl, 0, $strpos);
 		}
 
@@ -233,6 +248,10 @@ class AltoRouter {
 					foreach($params as $key => $value) {
 						if(is_numeric($key)) unset($params[$key]);
 					}
+				}
+				
+				if ($query_string_parameters) {
+					$params['query_string_parameters'] = $query_string_parameters;
 				}
 
 				return array(

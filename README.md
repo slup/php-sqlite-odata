@@ -17,7 +17,7 @@ Copy alongside a sqlite database and edit Config.class.php
 * Additional datatypes
 
 ## Dependencies
-Using [AltoRouter](https://github.com/dannyvankooten/AltoRouter) for routing
+Using (modified) [AltoRouter](https://github.com/slup/AltoRouter) for routing
 
 ## License
 The MIT License (MIT)

@@ -1,5 +1,6 @@
 <?php echo '<?xml version="1.0"'; ?> encoding="utf-8"?>
 <feed xml:base="http://<?php echo $service_base_path; ?>" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <?php if (isset($inline_count)) { echo "<m:count>${inline_count}</m:count>\n"; } ?>
   <title type="text"><?php echo $current_collection; ?></title>
   <id>http://<?php echo $service_base_path; ?><?php echo $current_collection; ?></id>
   <updated><?php echo $updated; ?></updated>

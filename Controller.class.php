@@ -60,7 +60,7 @@ class Controller {
 		echo $template->render('templates/metadata.xml');
 	}
 	
-	public function serve_collection($collection) {
+	public function serve_collection($collection, $query_options) {
 		$template = new Template();
 		$dba = new DatabaseAnalyzer($this->database);
 		
@@ -87,10 +87,19 @@ class Controller {
 			
 			$rows = $dba->table_get_rows($collection);
 			$template->entries = $rows;
+            
+            if (array_key_exists('$inlinecount', $query_options)) {
+                $template->inline_count = count($rows);
+            }
 			
 			echo $template->render('templates/collection.xml');
 		}
 	}
+    
+    public function serve_collection_with_options($collection, $query_options) {
+        print_r($collection);
+        print_r($query_options);
+    }
 	
 	public function serve_entry($collection, $id) {
 		$template = new Template();
