@@ -78,14 +78,23 @@ class Controller {
 				if (1 == $column['pk']) {
 					$pk_column = $column['name'];
 				}
-				
-				$result_columns[$column['name']] = Constant::$DATATYPE_MAPPING[$column['type']];
+				$result_columns[] = array(
+						'type' => Constant::$DATATYPE_MAPPING[$column['type']],
+						'name' => $column['name']
+					);
 			}
 			
 			$template->pk_column = $pk_column;
 			$template->result_columns = $result_columns;
 			
 			$rows = $dba->table_get_rows($collection);
+			
+			foreach ($rows as $key => $row) {
+				foreach ($columns as $column) {
+					$rows[$key][$column['name']] = DataConverter::database2OData($column, $row[$column['name']]);
+				}
+			}
+			
 			$template->entries = $rows;
             
             if (array_key_exists('$inlinecount', $query_options)) {
@@ -198,7 +207,14 @@ class Controller {
 		
 		if ($dba->table_exists($collection)) {
 			header('Content-type: text/plain;charset=utf-8');
-			$count = $dba->table_row_count($collection);
+			try {
+				$count = $dba->table_row_count($collection);
+			}
+			catch (Exception $e) {
+    			sleep(1);
+    			count_collection($collection);
+			}
+			
 			echo $count;
 			return;
 		}
