@@ -18,14 +18,8 @@
     <category term="<?php echo $model_name; ?>.<?php echo $current_collection; ?>" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
     <content type="application/xml">
       <m:properties>
-      <?php foreach($result_columns as $column_name => $column_type): ?>
-        <?php $value = ""; ?>
-        <?php if ("Edm.Boolean" == $column_type): ?>
-        <?php $value = ($entry[$column_name]) ? "true" : "false"; ?>
-        <?php else: ?>
-        <?php $value = $entry[$column_name]; ?>
-        <?php endif; ?>
-        <d:<?php echo $column_name; ?> m:type="<?php echo $column_type; ?>"><?php echo $value; ?></d:<?php echo $column_name; ?>>
+      <?php foreach($result_columns as $result_column): ?>
+        <d:<?php echo $result_column['name']; ?> m:type="<?php echo $result_column['type']; ?>"><?php echo $entry[$result_column['name']]; ?></d:<?php echo $result_column['name']; ?>>
       <?php endforeach; ?>
       </m:properties>
     </content>
