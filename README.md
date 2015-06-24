@@ -22,7 +22,7 @@ Using (modified) [AltoRouter](https://github.com/slup/AltoRouter) for routing
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2015 Werner Schwarz, Patrick Wenger
+Copyright (c) 2015 Werner Schwarz, Patrick Wenger, Jan Nyfeler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
