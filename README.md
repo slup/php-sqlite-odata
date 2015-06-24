@@ -9,7 +9,7 @@ Copy alongside a sqlite database and edit Config.class.php
 * Table name = collection name
 * CRUD (Create, Read, Update, Delete)
 * Edm Datatypes
-  * Int32, String, Boolean
+  * Int32, String, Boolean, DateTime
 
 ## Roadmap
 * Navigation properties based on foreign keys
