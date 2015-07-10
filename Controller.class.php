@@ -82,8 +82,10 @@ class Controller {
 				if (1 == $column['pk']) {
 					$pk_column = $column['name'];
 				}
-				
-				$result_columns[$column['name']] = Constant::$DATATYPE_MAPPING[$column['type']];
+				$result_columns[] = array(
+						'type' => Constant::$DATATYPE_MAPPING[$column['type']],
+						'name' => $column['name']
+					);
 			}
 			
 			$template->pk_column = $pk_column;
@@ -95,6 +97,13 @@ class Controller {
             } else {
                 $rows = $dba->table_get_rows($collection);
             }
+			
+			foreach ($rows as $key => $row) {
+				foreach ($columns as $column) {
+					$rows[$key][$column['name']] = DataConverter::database2OData($column, $row[$column['name']]);
+				}
+			}
+			
 			$template->entries = $rows;
             
             $relationships = $dba->table_get_relationships($collection);
@@ -172,7 +181,6 @@ class Controller {
 				$new_properties[$tag] = $value.'';
 			}
 			
-            print_r($new_properties);
 			$successful = $dba->entry_create($collection, $new_properties);
 			
 			if ($successful) {

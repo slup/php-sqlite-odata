@@ -9,7 +9,7 @@ Copy alongside a sqlite database and edit Config.class.php
 * Table name = collection name
 * CRUD (Create, Read, Update, Delete)
 * Edm Datatypes
-  * Int32, String, Boolean
+  * Int32, String, Boolean, DateTime
 
 ## Roadmap
 * Navigation properties based on foreign keys
@@ -22,7 +22,7 @@ Using (modified) [AltoRouter](https://github.com/slup/AltoRouter) for routing
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2015 Werner Schwarz, Patrick Wenger
+Copyright (c) 2015 Werner Schwarz, Patrick Wenger, Jan Nyfeler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
