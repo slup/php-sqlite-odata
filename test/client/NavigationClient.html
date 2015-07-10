@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge' />
+	<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+	
+	<title>UI5: php-sqlite-odata Navigation testclient</title>
+	
+	<script id='sap-ui-bootstrap' type='text/javascript'
+		src='../../../openui5/resources/sap-ui-core.js'
+		data-sap-ui-theme='sap_bluecrystal'
+		data-sap-ui-xx-bindingSyntax='complex'
+		data-sap-ui-libs='sap.m, sap.ui.commons'>
+	</script>
+	
+	<script>
+		
+		sap.ui.controller("ch.slup.navigationclient", {
+			
+			onInit : function() {
+				// set initial ui configuration model
+				oCfgModel = new sap.ui.model.json.JSONModel({});
+				this.getView().setModel(oCfgModel, "cfg");
+				this._toggleCfgModel();
+			},
+			
+			_toggleCfgModel : function () {
+				var oCfgModel = this.getView().getModel("cfg");
+				var oData = oCfgModel.getData();
+				var bDataNoSetYet = !oData.hasOwnProperty("inDelete");
+				var bInDelete = (bDataNoSetYet) ? true : oData.inDelete;
+
+				oCfgModel.setData({
+					inDelete : !bInDelete,
+					notInDelete : bInDelete,
+					notebookListMode : (!bInDelete) ? "Delete" : "None",
+                    noteListMode : (!bInDelete) ? "Delete" : "None",
+				});
+			},
+			
+			addNotebook : function(oEvent) {
+				var oNewNotebookModel = this.getView().getModel('newNotebookModel');
+				var sTitle = oNewNotebookModel.getProperty('/newTitle');
+				
+				var oModel = this.getView().getModel();
+				var oNewData = {
+					"title" : sTitle,
+				}
+				
+				var sPath = this.getView().byId('notebookList').getBindingInfo('items').path;
+				
+				oModel.create(sPath, oNewData, null, function(){
+						console.log("Notebook: Create successful");
+						oNewNotebookModel.setProperty('/newTitle', '');
+					},function(){
+						console.log("Notebook: Create failed");
+					}
+				);
+			},
+            
+			addNote : function(oEvent) {
+				var oNewNoteModel = this.getView().getModel('newNoteModel');
+				var sNote = oNewNoteModel.getProperty('/newNote');
+                var iNotebookId = this.getView().byId('detail').getBindingContext().getProperty('id');
+				
+				var oModel = this.getView().getModel();
+				var oNewData = {
+					"note" : sNote,
+                    "notebookId" : iNotebookId
+				}
+				
+				var sPath = this.getView().byId('noteList').getBindingInfo('items').path;
+				
+				oModel.create(sPath, oNewData, null, function(){
+						console.log("Note: Create successful");
+						oNewNoteModel.setProperty('/newNote', '');
+                        oModel.refresh();
+					},function(){
+						console.log("Note: Create failed");
+					}
+				);
+			},
+			
+			deleteElement : function(oEvent) {
+				var oModel = this.getView().getModel();
+				var sPath = oEvent.getParameters().listItem.getBindingContext().getPath();
+				
+				oModel.remove(sPath, 
+					{ 
+						success: function(){
+							console.log("Delete successful");
+						},
+						error: function() {
+							console.log("Delete failed");
+						}
+					}
+				);
+			},
+			
+			onEditOrDoneButtonPress : function (oEvent) {
+				this._toggleCfgModel();
+			},
+			
+			notebookSelected : function(oEvent) {
+				var oApp = this.getView().byId('theApp');
+				var oDetailPage = this.getView().byId('detail');
+				
+				oDetailPage.setBindingContext(oEvent.getSource().getBindingContext());
+				
+				oApp.to(oDetailPage, 'slide', null, null);
+			},
+			
+			detailBackPressed : function(oEvent) {
+				var oApp = this.getView().byId('theApp');
+				oApp.back(null, null);
+			}
+		});
+		
+		
+var xml = '<mvc:View'
++ '  controllerName="ch.slup.navigationclient"'
++ '  xmlns:mvc="sap.ui.core.mvc"'
++ '  xmlns:form="sap.ui.layout.form"'
++ '  xmlns="sap.m">'
++ '  <App id="theApp">'
++ '	<Page id="master" title="Notes">'
++ '	  <headerContent>'
++ '		<Button'
++ '			id="editButton"'
++ '			icon="sap-icon://edit"'
++ '			visible="{cfg>/notInDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '		<Button'
++ '			id="doneButton"'
++ '			icon="sap-icon://accept"'
++ '			visible="{cfg>/inDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '	  </headerContent>'
++ '	  <content>'
++ '		<Panel headerText="Add notebook" expanded="false" expandable="true">'
++ '			<form:SimpleForm'
++ '				minWidth="800"'
++ '				maxContainerCols="2"'
++ '				editable="true"'
++ '				layout="ResponsiveGridLayout"'
++ '				labelSpanL="3"'
++ '				labelSpanM="3"'
++ '				emptySpanL="4"'
++ '				emptySpanM="4"'
++ '				columnsL="1"'
++ '				columnsM="1"'
++ '				class="editableForm">'
++ '				<form:content>'
++ '					<Input'
++ '					  value="{newNotebookModel>/newTitle}"'
++ '					  placeholder="Notebook title"/>'
++ '					<Button'
++ '					  icon="sap-icon://add"'
++ '					  text="Add"'
++ '					  press="addNotebook" />'
++ '				</form:content>'
++ '			</form:SimpleForm>'
++ '		</Panel>'
++ '		<List id="notebookList" items="{/Notebook}" delete="deleteElement" mode="{cfg>/notebookListMode}" >'
++ '		  <items>'
++ '			<StandardListItem'
++ '			  title="{title}"'
++ '			  icon="{sap-icon://add}"'
++ '			  type="Navigation" press="notebookSelected" />'
++ '		  </items>'
++ '		</List>'
++ '	  </content>'
++ '	</Page>'
++ '	<Page id="detail" title="Notes in Notebook \'{title}\' (id:{id})" showNavButton="true" navButtonPress="detailBackPressed">'
++ '      <headerContent>'
++ '		<Button'
++ '			id="noteEditButton"'
++ '			icon="sap-icon://edit"'
++ '			visible="{cfg>/notInDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '		<Button'
++ '			id="noteDoneButton"'
++ '			icon="sap-icon://accept"'
++ '			visible="{cfg>/inDelete}"'
++ '			press="onEditOrDoneButtonPress" />'
++ '	  </headerContent>'
++ '     <content>'
++ '     <List id="noteList" items="{Note}" delete="deleteElement" mode="{cfg>/noteListMode}" >'
++ '         <items>'
++ '             <StandardListItem'
++ '                 title="{note} (id:{id}, notebookId:{notebookId})"/>'
++ '         </items>'
++ '     </List>'
++ '	  <form:SimpleForm'
++ '		title=""'
++ '		minWidth="800"'
++ '		maxContainerCols="2"'
++ '		editable="true"'
++ '		layout="ResponsiveGridLayout"'
++ '		labelSpanL="3"'
++ '		labelSpanM="3"'
++ '		emptySpanL="4"'
++ '		emptySpanM="4"'
++ '		columnsL="1"'
++ '		columnsM="1"'
++ '		class="editableForm">'
++ '		  <form:content>'
++ '			<Label text="Note"/>'
++ '			<Input id="addNote" value="{newNoteModel>/newNote}"/>'
++ '			<Button'
++ '			  icon="sap-icon://add"'
++ '			  text="Add"'
++ '			  press="addNote" />'
++ '		  </form:content>'
++ '	  </form:SimpleForm>'
++ '      </content>'
++ '	</Page>'
++ '  </App>'
++ '</mvc:View>'
++ ''
++ ''
+
+
+
+
+		
+		var navigationView = sap.ui.xmlview({viewContent:xml});
+		
+		var oNewNotebookModelData = {
+			newTitle: "",
+		};
+		
+		var oNewNotebookModel = new sap.ui.model.json.JSONModel();
+		oNewNotebookModel.setData(oNewNotebookModelData);
+		navigationView.setModel(oNewNotebookModel, 'newNotebookModel');
+        
+        var oNewNoteModelData = {
+			newNote: "",
+		};
+		
+		var oNewNoteModel = new sap.ui.model.json.JSONModel();
+		oNewNoteModel.setData(oNewNoteModelData);
+		navigationView.setModel(oNewNoteModel, 'newNoteModel');
+		
+		var oModel = new sap.ui.model.odata.ODataModel('/ODataTest/');
+		navigationView.setModel(oModel);
+		
+		navigationView.placeAt('content');
+	</script>
+	
+	</head>
+	<body class='sapUiBody'>
+		<div id='content'></div>
+	</body>
+</html>
