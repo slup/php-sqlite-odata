@@ -1,10 +1,7 @@
 <?php
 require_once 'Constant.class.php';
-
 class DatabaseAnalyzer {
-
 	protected $database_name = '';
-
 	/**
 	  * Creates DatabaseAnalyzer for specific sqlite database.
 	  *
@@ -225,7 +222,6 @@ class DatabaseAnalyzer {
 		
 		$result = $this->database->prepare($query);
 		$result->execute($insert_values);
-		
 		return true;
 	}
 	
@@ -348,5 +344,4 @@ class DatabaseAnalyzer {
     
     }
 }
-
 ?>
