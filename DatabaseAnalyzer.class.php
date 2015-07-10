@@ -52,9 +52,68 @@ class DatabaseAnalyzer {
 			return $rows;
 		}
 	}
-	
-	public function table_get_entry($table_name, $pk_column, $id) {
+    
+    public function table_get_rows_filtered($table_name, $filter) {
 		if ($this->table_exists($table_name)) {
+            $columns = $this->get_columns($table_name);
+            $column_names = array();
+            foreach ($columns as $column) {
+                $column_names[] = $column['name'];
+            }
+            
+            $query = "SELECT * FROM ${table_name} WHERE";
+            $filter_values = array();
+            foreach ($filter as $filter_column => $filter_value) {
+                if (!in_array($filter_column, $column_names)) {
+                    // ignoring non existing columns
+                    continue; 
+                }
+                // first element does not need "AND"
+                if ($filter_value !== reset($filter)) { 
+                    $query .= " AND ";
+                }
+                $query .= " ${filter_column} = ? ";
+                $filter_values[] = $filter_value;
+            }
+            
+            if (strpos($query, '?') === false) {
+                // if no valid filter value is given, nothing can be found
+                return array(); 
+            }
+            
+			$result = $this->database->prepare($query);
+			$result->execute($filter_values);
+			$rows = $result->fetchAll(PDO::FETCH_ASSOC);
+			return $rows;
+		}
+	}
+	
+    public function table_get_pk_column($table_name) {
+        if ($this->table_exists($table_name)) {
+            $pk_column = '';
+            $columns = $this->get_columns($table_name);
+            foreach ($columns as $column) {
+				if (1 == $column['pk']) {
+					$pk_column = $column['name'];
+				}
+			}
+            
+            if ($pk_column === '') {
+                return FALSE;
+            } else {
+                return $pk_column;
+            }
+        }
+    }
+    
+	public function table_get_entry($table_name, $id) {
+		if ($this->table_exists($table_name)) {
+            $pk_column = $this->table_get_pk_column($table_name);
+            
+            if ($pk_column === FALSE) {
+                return array();
+            }
+            
 			$result = $this->database->prepare("SELECT * FROM ${table_name} WHERE ${pk_column} = ?");
 			$result->execute(array($id));
 			$row = $result->fetch(PDO::FETCH_ASSOC);
@@ -190,6 +249,104 @@ class DatabaseAnalyzer {
 			return ($count + 1);
 		}	
 	}
+    
+    public function table_get_foreign_keys($table_name) {
+		if ($this->table_exists($table_name)) {
+			$result = $this->database->prepare("PRAGMA foreign_key_list(${table_name})");
+			$result->execute();
+			
+			$foreign_keys = $result->fetchAll(PDO::FETCH_ASSOC);
+			return $foreign_keys;
+		}	
+	}
+    
+    public function table_get_relationships($table_name) {
+        if ($this->table_exists($table_name)) {
+            $relationships = array();
+            $tables = $this->get_tables();
+            foreach ($tables as $table) {
+                $foreign_keys = $this->table_get_foreign_keys($table['tbl_name']);
+                
+                if ($table['tbl_name'] === $table_name) {
+                    foreach ($foreign_keys as $foreign_key) {
+                        $foreign_key['type'] = 'entry';
+                        $relationships[] = $foreign_key;
+                    }
+                    continue;
+                }
+                foreach ($foreign_keys as $foreign_key) {
+                    if ($foreign_key['table'] === $table_name) {
+                        $relationships[] = array(
+                                'table' => $table['tbl_name'],
+                                'type' => 'feed'
+                            );
+                    }
+                }
+			}
+            
+            return $relationships;
+        }
+    }
+    
+    public function table_get_relationships_between($table_name, $related_table_name) {
+        $table_foreign_keys = $this->table_get_foreign_keys($table_name);
+        $related_table_foreign_keys = $this->table_get_foreign_keys($related_table_name);
+        
+        $relationships = array();
+        
+        foreach ($table_foreign_keys as $foreign_key) {
+            // if related table is part of a foreign key of table
+            /* Only 1:n is supported, foreign keys are always stored under the n-table
+            * thus follows that: table is n and related table is 1, the relationship
+            * from table to related table is of type entry
+            */
+            if($foreign_key['table'] === $related_table_name) {
+                $relationships[$table_name] = array(
+                        'fromTable' => $table_name,
+                        'fromColumn' => $foreign_key['from'],
+                        'toTable' => $related_table_name,
+                        'toColumn' => $foreign_key['to'],
+                        'type' => 'entry'
+                    );
+                    
+                $relationships[$related_table_name] = array(
+                        'fromTable' => $related_table_name,
+                        'fromColumn' => $foreign_key['to'],
+                        'toTable' => $table_name,
+                        'toColumn' => $foreign_key['from'],
+                        'type' => 'feed'
+                    );
+                    
+                return $relationships;
+            }
+        }
+        
+        foreach ($related_table_foreign_keys as $foreign_key) {
+            // opposite of above
+            if($foreign_key['table'] === $table_name) {
+                $relationships[$related_table_name] = array(
+                        'fromTable' => $related_table_name,
+                        'fromColumn' => $foreign_key['from'],
+                        'toTable' => $table_name,
+                        'toColumn' => $foreign_key['to'],
+                        'type' => 'entry'
+                    );
+                    
+                $relationships[$table_name] = array(
+                        'fromTable' => $table_name,
+                        'fromColumn' => $foreign_key['to'],
+                        'toTable' => $related_table_name,
+                        'toColumn' => $foreign_key['from'],
+                        'type' => 'feed'
+                    );
+                    
+                return $relationships;
+            }
+        }
+        
+        return $relationships;
+    
+    }
 }
 
 ?>

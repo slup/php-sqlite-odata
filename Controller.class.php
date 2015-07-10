@@ -61,7 +61,11 @@ class Controller {
 	}
 	
 	public function serve_collection($collection, $query_options) {
-		$template = new Template();
+		$this->serve_collection_filtered($collection, $query_options, array());
+	}
+    
+    public function serve_collection_filtered($collection, $query_options, $filter) {
+        $template = new Template();
 		$dba = new DatabaseAnalyzer($this->database);
 		
 		if ($dba->table_exists($collection)) {
@@ -85,8 +89,16 @@ class Controller {
 			$template->pk_column = $pk_column;
 			$template->result_columns = $result_columns;
 			
-			$rows = $dba->table_get_rows($collection);
+            
+            if ($filter) {
+                $rows = $dba->table_get_rows_filtered($collection, $filter);
+            } else {
+                $rows = $dba->table_get_rows($collection);
+            }
 			$template->entries = $rows;
+            
+            $relationships = $dba->table_get_relationships($collection);
+			$template->navigation_properties = $relationships;
             
             if (array_key_exists('$inlinecount', $query_options)) {
                 $template->inline_count = count($rows);
@@ -94,11 +106,6 @@ class Controller {
 			
 			echo $template->render('templates/collection.xml');
 		}
-	}
-    
-    public function serve_collection_with_options($collection, $query_options) {
-        print_r($collection);
-        print_r($query_options);
     }
 	
 	public function serve_entry($collection, $id) {
@@ -114,24 +121,42 @@ class Controller {
 			$columns = $dba->get_columns($collection);
 			
 			$result_columns = array();
-			$pk_column = "";
 			foreach ($columns as $column) {
-				if (1 == $column['pk']) {
-					$pk_column = $column['name'];
-				}
-				
 				$result_columns[$column['name']] = Constant::$DATATYPE_MAPPING[$column['type']];
 			}
 			
-			$template->pk_column = $pk_column;
+			$template->pk_column = $dba->table_get_pk_column($collection);
 			$template->result_columns = $result_columns;
 			
-			$row = $dba->table_get_entry($collection, $pk_column, $id);
+			$row = $dba->table_get_entry($collection, $id);
 			$template->entry = $row;
+            
+            $relationships = $dba->table_get_relationships($collection);
+			$template->navigation_properties = $relationships;
 			
 			echo $template->render('templates/entry.xml');
 		}
 	}
+    
+    public function serve_related($collection, $id, $related_collection) {
+        $dba = new DatabaseAnalyzer($this->database);
+        if ($dba->table_exists($collection) && $dba->table_exists($related_collection)) {
+        
+            //print_r($dba->table_get_relationships_between($collection, $related_collection));
+            // check if there is a relationship between those tables
+            $relationships = $dba->table_get_relationships_between($collection, $related_collection);
+            if (array_key_exists($collection, $relationships)) {
+                if ($relationships[$collection]['type'] === 'entry') {
+                    $row = $dba->table_get_entry($collection, $id);
+                    $related_id = $row[$relationships[$collection]['fromColumn']];
+                    $this->serve_entry($related_collection, $related_id);
+                } else {
+                    $this->serve_collection_filtered($related_collection, 
+                        array(), array($relationships[$collection]['toColumn'] => $id)); 
+                }
+            }
+        }
+    }
 	
 	public function create_entry($collection) {
 		$dba = new DatabaseAnalyzer($this->database);
@@ -147,6 +172,7 @@ class Controller {
 				$new_properties[$tag] = $value.'';
 			}
 			
+            print_r($new_properties);
 			$successful = $dba->entry_create($collection, $new_properties);
 			
 			if ($successful) {

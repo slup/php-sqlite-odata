@@ -15,6 +15,9 @@
       <name />
     </author>
     <link rel="edit" title="<?php echo $current_collection; ?>" href="<?php echo $current_collection; ?>(<?php echo $pk; ?>)" />
+    <?php foreach($navigation_properties as $navigation_property): ?>
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/<?php echo $navigation_property['table'] ?>" type="application/atom+xml;type=<?php echo $navigation_property['type'] ?>" title="<?php echo $navigation_property['table'] ?>" href="<?php echo $current_collection; ?>(<?php echo $pk; ?>)/<?php echo $navigation_property['table'] ?>" />
+    <?php endforeach; ?>
     <category term="<?php echo $model_name; ?>.<?php echo $current_collection; ?>" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
     <content type="application/xml">
       <m:properties>
