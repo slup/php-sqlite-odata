@@ -35,7 +35,7 @@ class DataConverter {
 			return DataConverter::booleanOData2DB($value);
 		}
 		else if($column['type'] == 'DATETIME') {
-			DataConverter::dateTimeOData2DB($value);
+			return DataConverter::dateTimeOData2DB($value);
 		}		
 		else {
 			return $value;
@@ -55,7 +55,8 @@ class DataConverter {
 	}
 	
 	public static function dateTimeOData2DB($odata_value) {
-		return str_replace($db_value, "T", " ");
+		$dt = strtotime($odata_value);
+		return date('Y-m-d H:i:s', $dt);
 	}
 }
 ?>
