@@ -138,6 +138,11 @@ class Controller {
 			$template->result_columns = $result_columns;
 			
 			$row = $dba->table_get_entry($collection, $id);
+			
+			foreach ($columns as $column) {
+				$row[$column['name']] = DataConverter::database2OData($column, $row[$column['name']]);
+			}
+
 			$template->entry = $row;
             
             $relationships = $dba->table_get_relationships($collection);
