@@ -8,11 +8,11 @@ Copy alongside a sqlite database and edit Config.class.php
 * Only single tables with one (integer) primary key
 * Table name = collection name
 * CRUD (Create, Read, Update, Delete)
+* Navigation properties based on foreign keys
 * Edm Datatypes
   * Int32, String, Boolean, DateTime
 
 ## Roadmap
-* Navigation properties based on foreign keys
 * Use sqlite rowid as primary key
 * Additional datatypes
 
