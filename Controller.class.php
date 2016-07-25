@@ -3,6 +3,7 @@
 require_once 'DatabaseAnalyzer.class.php';
 require_once 'Template.class.php';
 require_once 'Constant.class.php';
+require_once 'ServiceDocument.class.php';
 
 class Controller {
 
@@ -31,16 +32,8 @@ class Controller {
 	}
 
 	public function service_description() {
-		$template = new Template();
-		$db_analyzer = new DatabaseAnalyzer($this->database);
-		
-		$tables = $db_analyzer->get_tables();
-		
-		$template->tables = $tables;
-		$template->host = $this->host;
-		$template->subdir = $this->subdir;
-		$template->title = $this->model_name;
-		echo $template->render('templates/service_description.xml');
+		$sd = new ch\slup\documents\ServiceDocument($this->host, $this->subdir, $this->model_name, new DatabaseAnalyzer($this->database));
+		$sd->create_document();
 	}
 	
 	public function service_metadata() {
