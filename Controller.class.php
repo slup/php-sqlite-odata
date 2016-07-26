@@ -4,6 +4,7 @@ require_once 'DatabaseAnalyzer.class.php';
 require_once 'Template.class.php';
 require_once 'Constant.class.php';
 require_once 'ServiceDocument.class.php';
+require_once 'Metadata.class.php';
 
 class Controller {
 
@@ -37,6 +38,9 @@ class Controller {
 	}
 	
 	public function service_metadata() {
+		$metadata = new ch\slup\documents\Metadata($this->model_name, new DatabaseAnalyzer($this->database));
+		$metadata->create_document();
+		/*
 		$template = new Template();
 		
 		$db_analyzer = new DatabaseAnalyzer($this->database);
@@ -51,6 +55,7 @@ class Controller {
 		$template->tables = $tables;
 		$template->model_name = $this->model_name;
 		echo $template->render('templates/metadata.xml');
+		*/
 	}
 	
 	public function serve_collection($collection, $query_options) {
