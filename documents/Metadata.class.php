@@ -19,6 +19,8 @@ class Metadata {
 		foreach ($tables as $key => $table) {
 			$columns = $this->dba->get_columns($table['tbl_name']);
 			$tables[$key]['columns'] = $columns;
+			$relationships = $this->dba->table_get_relationships($table['tbl_name']);
+			$tables[$key]['relationships'] = $relationships;
 		}
 		
 		$this->writer->openURI('php://output'); 
@@ -51,6 +53,15 @@ class Metadata {
 						$this->writer->writeAttribute('Nullable', $nullable);
 						$this->writer->endElement(); 
 					}
+					foreach($table['relationships'] as $relationship) {
+						$this->writer->startElement('NavigationProperty');
+						$this->writer->writeAttribute('Name', $relationship['table']);
+						$this->writer->writeAttribute('Relationship', $this->model_name.'Model.'.$table['tbl_name'].'_'.$relationship['table']);
+						$this->writer->writeAttribute('ToRole', $relationship['table']);
+						$this->writer->writeAttribute('FromRole', $table['tbl_name']);
+						$this->writer->endElement();
+					}
+					//<NavigationProperty Name="Order" Relationship="NorthwindModel.FK_Order_Details_Orders" FromRole="Order_Details" ToRole="Orders"/>
 					$this->writer->endElement(); 
 				}
 				$this->writer->endElement(); 

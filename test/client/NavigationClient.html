@@ -7,7 +7,7 @@
 	<title>UI5: php-sqlite-odata Navigation testclient</title>
 	
 	<script id='sap-ui-bootstrap' type='text/javascript'
-		src='../../../openui5/resources/sap-ui-core.js'
+		src='https://openui5.netweaver.ondemand.com/resources/sap-ui-core.js'
 		data-sap-ui-theme='sap_bluecrystal'
 		data-sap-ui-xx-bindingSyntax='complex'
 		data-sap-ui-libs='sap.m, sap.ui.commons'>
@@ -242,7 +242,7 @@ var xml = '<mvc:View'
 		oNewNoteModel.setData(oNewNoteModelData);
 		navigationView.setModel(oNewNoteModel, 'newNoteModel');
 		
-		var oModel = new sap.ui.model.odata.ODataModel('/ODataTest/');
+		var oModel = new sap.ui.model.odata.ODataModel('../../ODataTest/');
 		navigationView.setModel(oModel);
 		
 		navigationView.placeAt('content');

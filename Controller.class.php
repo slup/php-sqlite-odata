@@ -3,8 +3,9 @@
 require_once 'DatabaseAnalyzer.class.php';
 require_once 'Template.class.php';
 require_once 'Constant.class.php';
-require_once 'ServiceDocument.class.php';
-require_once 'Metadata.class.php';
+require_once 'documents\ServiceDocument.class.php';
+require_once 'documents\Metadata.class.php';
+require_once 'documents\Collection.class.php';
 
 class Controller {
 
@@ -62,7 +63,11 @@ class Controller {
 		$this->serve_collection_filtered($collection, $query_options, array());
 	}
     
-    public function serve_collection_filtered($collection, $query_options, $filter) {
+    public function serve_collection_filtered($collection, $query_options, $filters) {
+		$collectionDocument = new ch\slup\documents\Collection($collection, new DatabaseAnalyzer($this->database), $this->model_name, $this->service_base_path, $query_options, $filters);
+		$collectionDocument->create_document();
+		
+		/*
         $template = new Template();
 		$dba = new DatabaseAnalyzer($this->database);
 		
@@ -113,6 +118,7 @@ class Controller {
 			
 			echo $template->render('templates/collection.xml');
 		}
+		*/
     }
 	
 	public function serve_entry($collection, $id) {

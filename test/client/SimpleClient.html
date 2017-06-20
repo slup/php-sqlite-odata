@@ -5,9 +5,10 @@
 	<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
 	
 	<title>UI5: Simple php-sqlite-odata testclient</title>
-	
+	<!-- src='../../../openui5/resources/sap-ui-core.js' -->
 	<script id='sap-ui-bootstrap' type='text/javascript'
-		src='../../../openui5/resources/sap-ui-core.js'
+		
+		src='https://openui5.netweaver.ondemand.com/resources/sap-ui-core.js'
 		data-sap-ui-theme='sap_bluecrystal'
 		data-sap-ui-xx-bindingSyntax='complex'
 		data-sap-ui-libs='sap.m, sap.ui.commons'>
@@ -224,7 +225,7 @@ var xml = '<mvc:View'
 		oNewModel.setData(oNewModelData);
 		simpleView.setModel(oNewModel, 'newModel');
 		
-		var oModel = new sap.ui.model.odata.ODataModel('/ODataTest/');
+		var oModel = new sap.ui.model.odata.ODataModel('../../ODataTest/');
 		simpleView.setModel(oModel);
 		
 		simpleView.placeAt('content');
