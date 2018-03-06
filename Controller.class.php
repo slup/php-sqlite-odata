@@ -6,6 +6,7 @@ require_once 'Constant.class.php';
 require_once 'documents\ServiceDocument.class.php';
 require_once 'documents\Metadata.class.php';
 require_once 'documents\Collection.class.php';
+require_once 'documents\Entry.class.php';
 
 class Controller {
 
@@ -122,6 +123,10 @@ class Controller {
     }
 	
 	public function serve_entry($collection, $id) {
+		$entryDocument = new ch\slup\documents\Entry($collection, $id, new DatabaseAnalyzer($this->database), $this->model_name, $this->service_base_path);
+		$entryDocument->create_document();
+		
+		/*
 		$template = new Template();
 		$dba = new DatabaseAnalyzer($this->database);
 		
@@ -154,6 +159,7 @@ class Controller {
 			
 			echo $template->render('templates/entry.xml');
 		}
+		*/
 	}
     
     public function serve_related($collection, $id, $related_collection) {

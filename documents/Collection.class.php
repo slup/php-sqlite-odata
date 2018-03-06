@@ -41,14 +41,12 @@ class Collection {
 		$this->result_columns = $result_columns;
 		
 		
-		$rows = $this->dba->table_get_rows($this->collection);
-		/*
-		if ($filter) {
-			$rows = $this->dba->table_get_rows_filtered($collection, $filter);
+		if ($this->filters) {
+			$rows = $this->dba->table_get_rows_filtered($this->collection, $this->filters);
 		} else {
-			$rows = $this->dba->table_get_rows($collection);
+			$rows = $this->dba->table_get_rows($this->collection);
 		}
-		*/
+		
 		
 		foreach ($rows as $key => $row) {
 			foreach ($columns as $column) {
@@ -58,8 +56,7 @@ class Collection {
 		
 		$this->entries = $rows;
 		
-		$this->relationships = $this->dba->table_get_relationships($this->collection);
-		$this->navigation_properties = $this->relationships;
+		$this->navigation_properties = $this->dba->table_get_relationships($this->collection);
 
 		
 		/*
@@ -79,7 +76,7 @@ class Collection {
 		$this->writer->startDocument('1.0', 'utf-8'); 
 		
 		$this->writer->startElement('feed');
-		$this->writer->writeAttribute('xml:base', 'http://'.$this->service_base_path);
+		$this->writer->writeAttribute('xml:base', $this->service_base_path);
 		$this->writer->writeAttribute('xmlns:d', 'http://schemas.microsoft.com/ado/2007/08/dataservices');
 		$this->writer->writeAttribute('xmlns:m', 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata');
 		$this->writer->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');

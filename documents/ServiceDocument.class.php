@@ -23,8 +23,8 @@ class ServiceDocument {
 		$this->writer->writeAttribute('xmlns', 'http://www.w3.org/2007/app');
 		$this->writer->writeAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
 		$this->writer->writeAttribute('xmlns:m', 'http://docs.oasis-open.org/odata/ns/metadata');
-		$this->writer->writeAttribute('xml:base', 'http://'.$this->host.$this->subdir);
-		$this->writer->writeAttribute('m:context', 'http://'.$this->host.$this->subdir.'$metadata');
+		$this->writer->writeAttribute('xml:base', $this->host.$this->subdir);
+		$this->writer->writeAttribute('m:context', $this->host.$this->subdir.'$metadata');
 			$this->writer->startElement('workspace');
 				$this->writer->writeElementNS('atom', 'title', null, $this->model_name);
 				foreach($tables as $table) {
