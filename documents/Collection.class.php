@@ -2,6 +2,8 @@
 namespace ch\slup\documents;
 
 use Constant;
+use ch\slup\documents;
+
 
 class Collection {
 	
@@ -100,51 +102,10 @@ class Collection {
 			$this->writer->writeAttribute('href', $this->collection);
 			$this->writer->endElement();
 			
+			$entryDocument = new Entry($this->collection, $this->dba, $this->model_name, $this->service_base_path);
 			//elements
 			foreach($this->entries as $entry) { 
-				$this->writer->startElement('entry');
-					$this->writer->startElement('id');
-					$pk = $entry[$pk_column];
-					$this->writer->text($this->service_base_path.$this->collection.'('.$pk.')');
-					$this->writer->endElement();
-					$this->writer->startElement('title');
-					$this->writer->writeAttribute('type', 'text');
-					$this->writer->endElement(); 
-					$this->writer->startElement('updated');
-					$this->writer->text(gmdate('c'));
-					$this->writer->endElement(); 
-					$this->writer->startElement('author');
-					$this->writer->writeElement('name');
-					$this->writer->endElement(); 
-					$this->writer->startElement('link');
-					$this->writer->writeAttribute('rel', 'edit');
-					$this->writer->writeAttribute('title', $this->collection);
-					$this->writer->writeAttribute('href', $this->collection.'('.$pk.')');
-					$this->writer->endElement();
-					foreach($this->navigation_properties as $navigation_property) {
-						$this->writer->startElement('link');
-						$this->writer->writeAttribute('rel', 'http://schemas.microsoft.com/ado/2007/08/dataservices/related/'.$navigation_property['table']);
-						$this->writer->writeAttribute('type', 'application/atom+xml;type='.$navigation_property['type']);
-						$this->writer->writeAttribute('title', $navigation_property['table']);
-						$this->writer->writeAttribute('href',  $this->collection.'('.$pk.')/'.$navigation_property['table']);
-						$this->writer->endElement();
-					}
-					$this->writer->startElement('category');
-					$this->writer->writeAttribute('term', $this->model_name.'.'.$this->collection);
-					$this->writer->writeAttribute('scheme', 'http://schemas.microsoft.com/ado/2007/08/dataservices/scheme');
-					$this->writer->endElement();
-					$this->writer->startElement('content');
-					$this->writer->writeAttribute('type', 'application/xml');
-						$this->writer->startElementNS('m', 'properties', null);
-						foreach($this->result_columns as $result_column) {
-							$this->writer->startElementNS('d', $result_column['name'], null);
-							$this->writer->writeAttributeNS('m', 'type', null, $result_column['type']);
-							$this->writer->text($entry[$result_column['name']]);
-							$this->writer->endElement();
-						}
-						$this->writer->endElement();
-					$this->writer->endElement();
-				$this->writer->endElement();
+				$entryDocument->write_entry_data($this->writer, $entry, $pk_column, $this->navigation_properties, $this->result_columns);
 			}
 		$this->writer->endElement(); 
 		

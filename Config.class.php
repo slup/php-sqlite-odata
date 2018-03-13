@@ -2,7 +2,7 @@
 
 class Config {
 
-	private static $host = 'http://slup.ch';
+	private static $host = 'slup.ch';
 	private static $subdir = '/php-sqlite-odata/ODataTest';
 	private static $model_name = 'ODataTest';
 	private static $database_path = 'ODataTest.sqlite';

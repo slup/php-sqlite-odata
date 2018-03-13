@@ -5,20 +5,20 @@ use Constant;
 
 class Entry {
 	
-	public function __construct($collection='', $id, $db_analyzer, $model_name='', $service_base_path='', $query_options=[]) {
+	public function __construct($collection='', $db_analyzer, $model_name='', $service_base_path='', $query_options=[]) {
 		$this->dba = $db_analyzer;
 		$this->writer = new \XMLWriter(); 
 		$this->collection = $collection;
 		$this->service_base_path = $service_base_path;
 		$this->model_name = $model_name;
 		$this->query_options = $query_options;
-		$this->id = $id;
 	}
 	
-	public function create_document() {
+	public function create_document($id) {
 		header('Content-type: application/xml;charset=utf-8');
 		
-		if (!$this->dba->table_exists($this->collection)) {
+		if (!$this->dba->table_exists($this->collection)
+			|| !$this->dba->table_get_entry($this->collection, $id)) {
 			$this->write_error();
 			return;
 		}
@@ -41,7 +41,7 @@ class Entry {
 		//$this->result_columns = $result_columns;
 		
 		
-		$row = $this->dba->table_get_entry($this->collection, $this->id);
+		$row = $this->dba->table_get_entry($this->collection, $id);
 		
 		foreach ($columns as $column) {
 			$row[$column['name']] = \DataConverter::database2OData($column, $row[$column['name']]);
@@ -72,52 +72,56 @@ class Entry {
 		$this->writer->writeAttribute('xmlns:d', 'http://schemas.microsoft.com/ado/2007/08/dataservices');
 		$this->writer->writeAttribute('xmlns:m', 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata');
 		$this->writer->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
-			$this->writer->startElement('id');
-			$pk = $entry[$pk_column];
-			$this->writer->text($this->service_base_path.$this->collection.'('.$pk.')');
-			$this->writer->endElement();
-			$this->writer->startElement('title');
-			$this->writer->writeAttribute('type', 'text');
-			$this->writer->endElement(); 
-			$this->writer->startElement('updated');
-			$this->writer->text(gmdate('c'));
-			$this->writer->endElement(); 
-			$this->writer->startElement('author');
-			$this->writer->writeElement('name');
-			$this->writer->endElement(); 
-			$this->writer->startElement('link');
-			$this->writer->writeAttribute('rel', 'edit');
-			$this->writer->writeAttribute('title', $this->collection);
-			$this->writer->writeAttribute('href', $this->collection.'('.$pk.')');
-			$this->writer->endElement();
-			foreach($navigation_properties as $navigation_property) {
-				$this->writer->startElement('link');
-				$this->writer->writeAttribute('rel', 'http://schemas.microsoft.com/ado/2007/08/dataservices/related/'.$navigation_property['table']);
-				$this->writer->writeAttribute('type', 'application/atom+xml;type='.$navigation_property['type']);
-				$this->writer->writeAttribute('title', $navigation_property['table']);
-				$this->writer->writeAttribute('href',  $this->collection.'('.$pk.')/'.$navigation_property['table']);
-				$this->writer->endElement();
-			}
-			$this->writer->startElement('category');
-			$this->writer->writeAttribute('term', $this->model_name.'.'.$this->collection);
-			$this->writer->writeAttribute('scheme', 'http://schemas.microsoft.com/ado/2007/08/dataservices/scheme');
-			$this->writer->endElement();
-			$this->writer->startElement('content');
-			$this->writer->writeAttribute('type', 'application/xml');
-				$this->writer->startElementNS('m', 'properties', null);
-				foreach($result_columns as $result_column) {
-					$this->writer->startElementNS('d', $result_column['name'], null);
-					$this->writer->writeAttributeNS('m', 'type', null, $result_column['type']);
-					$this->writer->text($entry[$result_column['name']]);
-					$this->writer->endElement();
-				}
-				$this->writer->endElement();
-			$this->writer->endElement();
+		$this->write_entry_data($this->writer, $entry, $pk_column, $navigation_properties, $result_columns);
 		$this->writer->endElement();
 		$this->writer->endDocument();
 		
 		$this->writer->flush();
 		
+	}
+	
+	public function write_entry_data($writer, $entry, $pk_column, $navigation_properties, $result_columns) {
+		$writer->startElement('id');
+		$pk = $entry[$pk_column];
+		$writer->text($this->service_base_path.$this->collection.'('.$pk.')');
+		$writer->endElement();
+		$writer->startElement('title');
+		$writer->writeAttribute('type', 'text');
+		$writer->endElement(); 
+		$writer->startElement('updated');
+		$writer->text(gmdate('c'));
+		$writer->endElement(); 
+		$writer->startElement('author');
+		$writer->writeElement('name');
+		$writer->endElement(); 
+		$writer->startElement('link');
+		$writer->writeAttribute('rel', 'edit');
+		$writer->writeAttribute('title', $this->collection);
+		$writer->writeAttribute('href', $this->collection.'('.$pk.')');
+		$writer->endElement();
+		foreach($navigation_properties as $navigation_property) {
+			$writer->startElement('link');
+			$writer->writeAttribute('rel', 'http://schemas.microsoft.com/ado/2007/08/dataservices/related/'.$navigation_property['table']);
+			$writer->writeAttribute('type', 'application/atom+xml;type='.$navigation_property['type']);
+			$writer->writeAttribute('title', $navigation_property['table']);
+			$writer->writeAttribute('href',  $this->collection.'('.$pk.')/'.$navigation_property['table']);
+			$writer->endElement();
+		}
+		$writer->startElement('category');
+		$writer->writeAttribute('term', $this->model_name.'.'.$this->collection);
+		$writer->writeAttribute('scheme', 'http://schemas.microsoft.com/ado/2007/08/dataservices/scheme');
+		$writer->endElement();
+		$writer->startElement('content');
+		$writer->writeAttribute('type', 'application/xml');
+			$writer->startElementNS('m', 'properties', null);
+			foreach($result_columns as $result_column) {
+				$writer->startElementNS('d', $result_column['name'], null);
+				$writer->writeAttributeNS('m', 'type', null, $result_column['type']);
+				$writer->text($entry[$result_column['name']]);
+				$writer->endElement();
+			}
+			$writer->endElement();
+		$writer->endElement();
 	}
 	
 	private function write_error() {
