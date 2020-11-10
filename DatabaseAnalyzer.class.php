@@ -51,6 +51,8 @@ class DatabaseAnalyzer {
 	}
     
     public function table_get_rows_filtered($table_name, $filter) {
+		return $this->table_query_filtered("SELECT * FROM ${table_name} WHERE", $table_name, $filter);
+		/*
 		if ($this->table_exists($table_name)) {
             $columns = $this->get_columns($table_name);
             $column_names = array();
@@ -82,7 +84,7 @@ class DatabaseAnalyzer {
 			$result->execute($filter_values);
 			$rows = $result->fetchAll(PDO::FETCH_ASSOC);
 			return $rows;
-		}
+		}*/
 	}
 	
     public function table_get_pk_column($table_name) {
@@ -125,6 +127,49 @@ class DatabaseAnalyzer {
 			
 			$count = $result->fetch(PDO::FETCH_COLUMN, 0);
 			return $count;
+		}
+	}
+	
+	public function table_row_count_filtered($table_name, $filter) {
+			$count_array = $this->table_query_filtered("SELECT COUNT(*) AS count FROM ${table_name} WHERE", $table_name, $filter);
+			if ($count_array) {
+				return $count_array[0]['count'];
+			} else {
+				return 0;
+			}
+	}
+	
+	public function table_query_filtered($base_query, $table_name, $filter) {
+		if ($this->table_exists($table_name)) {
+			$columns = $this->get_columns($table_name);
+            $column_names = array();
+            foreach ($columns as $column) {
+                $column_names[] = $column['name'];
+            }
+			
+			$query = $base_query;
+            $filter_values = array();
+            foreach ($filter as $filter_column => $filter_value) {
+                if (!in_array($filter_column, $column_names)) {
+                    // ignoring non existing columns
+                    continue; 
+                }
+                // first element does not need "AND"
+                if ($filter_value !== reset($filter)) { 
+                    $query .= " AND ";
+                }
+                $query .= " ${filter_column} = ? ";
+                $filter_values[] = $filter_value;
+            }
+            
+            if (strpos($query, '?') === false) {
+                // if no valid filter value is given, nothing can be found
+                return array(); 
+            }
+            
+			$result = $this->database->prepare($query);
+			$result->execute($filter_values);
+			return $result->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
 	
@@ -222,7 +267,8 @@ class DatabaseAnalyzer {
 		
 		$result = $this->database->prepare($query);
 		$result->execute($insert_values);
-		return true;
+		
+		return $new_values[$pk_column];
 	}
 	
 	public function entry_delete($table_name, $id) {

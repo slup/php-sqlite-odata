@@ -20,6 +20,7 @@
   $router->map( 'GET', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->serve_entry($collection, $id); });
   $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]', function($collection, $id, $related_collection) use ($controller) { $controller->serve_related($collection, $id, $related_collection); });
   $router->map( 'GET', '/[a:collection]/[\$count:count]', function($collection) use ($controller) { $controller->count_collection($collection); });
+  $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]/[\$count:count]', function($collection, $id, $related_collection) use ($controller) { $controller->count_related($collection, $id, $related_collection); });
   
   $router->map( 'PUT', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->update_entry($collection, $id); });
   $router->map( 'POST', '/[a:collection]', function($collection) use ($controller) { $controller->create_entry($collection); });

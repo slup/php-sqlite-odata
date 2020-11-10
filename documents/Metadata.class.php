@@ -65,6 +65,20 @@ class Metadata {
 					$this->writer->endElement(); 
 				}
 				$this->writer->endElement(); 
+				/*
+				<Association Name="FK_Territories_Region">
+					<End Type="NorthwindModel.Region" Role="Region" Multiplicity="1"/>
+					<End Type="NorthwindModel.Territory" Role="Territories" Multiplicity="*"/>
+					<ReferentialConstraint>
+						<Principal Role="Region">
+							<PropertyRef Name="RegionID"/>
+						</Principal>
+						<Dependent Role="Territories">
+							<PropertyRef Name="RegionID"/>
+						</Dependent>
+					</ReferentialConstraint>
+				</Association>
+				*/
 				$this->writer->startElement('Schema');
 				$this->writer->writeAttribute('Namespace', $this->model_name.'.Model');
 				$this->writer->writeAttribute('xmlns', 'http://schemas.microsoft.com/ado/2008/09/edm');
@@ -79,6 +93,12 @@ class Metadata {
 						$this->writer->writeAttribute('EntityType', $this->model_name.'Model.'.$table['tbl_name']);
 						//TODO add links between entitysets
 						$this->writer->endElement(); 
+						/*
+						<AssociationSet Name="FK_Territories_Region" Association="NorthwindModel.FK_Territories_Region">
+							<End Role="Region" EntitySet="Regions"/>
+							<End Role="Territories" EntitySet="Territories"/>
+						</AssociationSet>
+						*/
 					}
 					$this->writer->endElement(); 
 				$this->writer->endElement();

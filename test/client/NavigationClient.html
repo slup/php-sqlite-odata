@@ -162,12 +162,10 @@ var xml = '<mvc:View'
 + '			</form:SimpleForm>'
 + '		</Panel>'
 + '		<List id="notebookList" items="{/Notebook}" delete="deleteElement" mode="{cfg>/notebookListMode}" >'
-+ '		  <items>'
 + '			<StandardListItem'
 + '			  title="{title}"'
 + '			  icon="{sap-icon://add}"'
 + '			  type="Navigation" press="notebookSelected" />'
-+ '		  </items>'
 + '		</List>'
 + '	  </content>'
 + '	</Page>'
@@ -186,10 +184,8 @@ var xml = '<mvc:View'
 + '	  </headerContent>'
 + '     <content>'
 + '     <List id="noteList" items="{Note}" delete="deleteElement" mode="{cfg>/noteListMode}" >'
-+ '         <items>'
-+ '             <StandardListItem'
-+ '                 title="{note} (id:{id}, notebookId:{notebookId})"/>'
-+ '         </items>'
++ '         <StandardListItem'
++ '             title="{note} (id:{id}, notebookId:{notebookId})"/>'
 + '     </List>'
 + '	  <form:SimpleForm'
 + '		title=""'
@@ -242,7 +238,8 @@ var xml = '<mvc:View'
 		oNewNoteModel.setData(oNewNoteModelData);
 		navigationView.setModel(oNewNoteModel, 'newNoteModel');
 		
-		var oModel = new sap.ui.model.odata.ODataModel('../../ODataTest/');
+		var oModel = new sap.ui.model.odata.v2.ODataModel('../../ODataTest/', { "useBatch" : false, "json" : false  });
+		
 		navigationView.setModel(oModel);
 		
 		navigationView.placeAt('content');

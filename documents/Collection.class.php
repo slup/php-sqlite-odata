@@ -105,7 +105,9 @@ class Collection {
 			$entryDocument = new Entry($this->collection, $this->dba, $this->model_name, $this->service_base_path);
 			//elements
 			foreach($this->entries as $entry) { 
+				$this->writer->startElement('entry');
 				$entryDocument->write_entry_data($this->writer, $entry, $pk_column, $this->navigation_properties, $this->result_columns);
+				$this->writer->endElement();
 			}
 		$this->writer->endElement(); 
 		
