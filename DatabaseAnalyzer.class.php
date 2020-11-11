@@ -348,6 +348,7 @@ class DatabaseAnalyzer {
                         'fromColumn' => $foreign_key['from'],
                         'toTable' => $related_table_name,
                         'toColumn' => $foreign_key['to'],
+                        'name' => 'FK_'.$table_name.'_'.$related_table_name,
                         'type' => 'entry'
                     );
                     
@@ -356,6 +357,7 @@ class DatabaseAnalyzer {
                         'fromColumn' => $foreign_key['to'],
                         'toTable' => $table_name,
                         'toColumn' => $foreign_key['from'],
+                        'name' => 'FK_'.$table_name.'_'.$related_table_name,
                         'type' => 'feed'
                     );
                     
@@ -371,6 +373,7 @@ class DatabaseAnalyzer {
                         'fromColumn' => $foreign_key['from'],
                         'toTable' => $table_name,
                         'toColumn' => $foreign_key['to'],
+                        'name' => 'FK_'.$related_table_name.'_'.$table_name,
                         'type' => 'entry'
                     );
                     
@@ -379,6 +382,7 @@ class DatabaseAnalyzer {
                         'fromColumn' => $foreign_key['to'],
                         'toTable' => $related_table_name,
                         'toColumn' => $foreign_key['from'],
+                        'name' => 'FK_'.$related_table_name.'_'.$table_name,
                         'type' => 'feed'
                     );
                     
