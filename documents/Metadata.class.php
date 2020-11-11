@@ -148,13 +148,37 @@ class Metadata {
 					$this->writer->writeAttribute('m:IsDefaultEntityContainer', 'true');
 					foreach($tables as $table) {
 						$this->writer->startElement('EntitySet');
-						$this->writer->writeAttribute('Name', $table['tbl_name']);
+						$this->writer->writeAttribute('Name', $table['tbl_name'].'_n');
 						$this->writer->writeAttribute('EntityType', $this->model_name.'Model.'.$table['tbl_name']);
 						//TODO add links between entitysets
 						$this->writer->endElement(); 
+						
+						
 						/*
 						<EntitySet Name="Regions" EntityType="NorthwindModel.Region"/>
 						<EntitySet Name="Territories" EntityType="NorthwindModel.Territory"/>
+						*/
+					}
+					foreach($tables as $table) {
+						foreach($table['relationships'] as $relationship) {
+							if ($relationship['type'] === 'entry') {
+								continue;
+							}
+							
+							$relationships = $this->dba->table_get_relationships_between($table['tbl_name'], $relationship['table']);
+							
+							$this->writer->startElement('AssociationSet');
+								$this->writer->startElement('End');
+								$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$table['tbl_name'].'_n');
+								$this->writer->endElement(); 
+								$this->writer->startElement('End');
+								$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$relationship['table'].'_n');
+								$this->writer->endElement(); 
+							$this->writer->endElement(); 
+						}
+						/*
 						<AssociationSet Name="FK_Territories_Region" Association="NorthwindModel.FK_Territories_Region">
 							<End Role="Region" EntitySet="Regions"/>
 							<End Role="Territories" EntitySet="Territories"/>
