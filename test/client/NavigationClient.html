@@ -86,33 +86,21 @@
 			deleteElement : function(oEvent) {
 				var oModel = this.getView().getModel();
 				var sPath = oEvent.getParameters().listItem.getBindingContext().getPath();
-				var oParent = oEvent.getParameters().listItem.getParent();
-				
 				
 				oModel.remove(sPath, 
 					{ 
 						success: function(oData, response){
 							console.log("Delete successful");
-							oParent.refreshItems();
 						},
 						error: function(oError) {
-							if (oError && oError.statusCode === 200) {
-								console.log("Delete successful");
-								oParent.refreshItems();
-								oModel.updateBindings(true);
-							} else {
-								console.log("Delete failed");
-							}
-						},
-						refreshAfterChange: true
+							console.log("Delete failed");
+						}
 					}
 				);
 			},
 			
 			onEditOrDoneButtonPress : function (oEvent) {
 				this._toggleCfgModel();
-				var oModel = this.getView().getModel();
-				oModel.updateBindings(true);
 			},
 			
 			notebookSelected : function(oEvent) {
