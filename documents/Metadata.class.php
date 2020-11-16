@@ -94,25 +94,29 @@ class Metadata {
 						$this->writer->writeAttribute('Name', $relationships[$table['tbl_name']]['name']);
 							$this->writer->startElement('End');
 							$this->writer->writeAttribute('Type', $this->model_name.'Model.'.$relationships[$table['tbl_name']]['fromTable']);
-							$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
+							$this->writer->writeAttribute('Role', $table['tbl_name']);
+							//$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
 							$this->writer->writeAttribute('Multiplicity', $relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "1" : "*");
 							//$this->writer->writeAttribute('print_r', print_r($relationships, TRUE));
 							$this->writer->endElement(); 
 							$this->writer->startElement('End');
 							$this->writer->writeAttribute('Type', $this->model_name.'Model.'.$relationships[$table['tbl_name']]['toTable']);
-							$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
+							$this->writer->writeAttribute('Role', $relationship['table']);
+							//$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
 							$this->writer->writeAttribute('Multiplicity', $relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "1" : "*");
 							//$this->writer->writeAttribute('print_r', print_r($table['relationships'], TRUE));
 							$this->writer->endElement(); 
 							$this->writer->startElement('ReferentialConstraint');
 								$this->writer->startElement('Principal');
-								$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('Role', $table['tbl_name']);
+								//$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
 									$this->writer->startElement('PropertyRef');
 									$this->writer->writeAttribute('Name', $relationships[$table['tbl_name']]['fromColumn']);
 									$this->writer->endElement();
 								$this->writer->endElement();
 								$this->writer->startElement('Dependent');
-								$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('Role', $relationship['table']);
+								//$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
 									$this->writer->startElement('PropertyRef');
 									$this->writer->writeAttribute('Name', $relationships[$table['tbl_name']]['toColumn']);
 									$this->writer->endElement();
@@ -148,7 +152,7 @@ class Metadata {
 					$this->writer->writeAttribute('m:IsDefaultEntityContainer', 'true');
 					foreach($tables as $table) {
 						$this->writer->startElement('EntitySet');
-						$this->writer->writeAttribute('Name', $table['tbl_name'].'_n');
+						$this->writer->writeAttribute('Name', $table['tbl_name']);
 						$this->writer->writeAttribute('EntityType', $this->model_name.'Model.'.$table['tbl_name']);
 						//TODO add links between entitysets
 						$this->writer->endElement(); 
@@ -169,12 +173,14 @@ class Metadata {
 							
 							$this->writer->startElement('AssociationSet');
 								$this->writer->startElement('End');
-								$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
-								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$table['tbl_name'].'_n');
+								$this->writer->writeAttribute('Role', $table['tbl_name']);
+								//$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$table['tbl_name']);
 								$this->writer->endElement(); 
 								$this->writer->startElement('End');
-								$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
-								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$relationship['table'].'_n');
+								$this->writer->writeAttribute('Role', $relationship['table']);
+								//$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
+								$this->writer->writeAttribute('EntitySet', $this->model_name.'Model.'.$relationship['table']);
 								$this->writer->endElement(); 
 							$this->writer->endElement(); 
 						}

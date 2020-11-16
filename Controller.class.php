@@ -238,7 +238,7 @@ class Controller {
         if ($dba->table_exists($collection)) {
             $successful = $dba->entry_delete($collection, $id);
             if ($successful) {
-                http_response_code(200);
+                http_response_code(204);
             } else {
                 http_response_code(400); // general error, for now
             }
