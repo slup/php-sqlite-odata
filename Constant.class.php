@@ -43,7 +43,7 @@ class DataConverter {
 	}
 	
 	public static function booleanDB2OData($db_value) {
-		return ($db_value === 1) ? "true" : "false";
+		return ($db_value == 1) ? "true" : "false";
 	}
 	
 	public static function dateTimeDB2OData($db_value) {

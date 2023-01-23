@@ -3,10 +3,10 @@
 require_once 'DatabaseAnalyzer.class.php';
 require_once 'Template.class.php';
 require_once 'Constant.class.php';
-require_once 'documents\ServiceDocument.class.php';
-require_once 'documents\Metadata.class.php';
-require_once 'documents\Collection.class.php';
-require_once 'documents\Entry.class.php';
+require_once 'documents/ServiceDocument.class.php';
+require_once 'documents/Metadata.class.php';
+require_once 'documents/Collection.class.php';
+require_once 'documents/Entry.class.php';
 
 class Controller {
 
