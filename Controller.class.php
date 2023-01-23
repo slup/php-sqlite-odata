@@ -273,6 +273,20 @@ class Controller {
             }
         }
     }
+
+    public function logout($is_auth_enabled) {
+        if ($is_auth_enabled) {
+            header('WWW-Authenticate: Basic realm="'.$this->model_name.' Service"');
+            header('HTTP/1.1 401 Unauthorized');   
+        } else {
+            header('Location: '.$this->subdir);
+        }
+    }
+
+    public function hash($value) {
+        header('Content-type: text/plain;charset=utf-8');
+        echo password_hash($value, PASSWORD_DEFAULT);
+    }
     
 }
 

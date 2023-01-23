@@ -1,6 +1,13 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteCond %{HTTP:Authorization} .
+	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule (.*)$ index.php?request=$1 [QSA,NC,L]
+	RewriteRule (.*)$ index.php?request=$1 [QSA,NC,L]
 </IfModule>
+<FilesMatch "\.(ini)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
