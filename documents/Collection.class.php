@@ -59,18 +59,6 @@ class Collection {
 		$this->entries = $rows;
 		
 		$this->navigation_properties = $this->dba->table_get_relationships($this->collection);
-
-		
-		/*
-		$tables = $this->dba->get_tables();
-		
-		foreach ($tables as $key => $table) {
-			$columns = $this->dba->get_columns($table['tbl_name']);
-			$tables[$key]['columns'] = $columns;
-			$relationships = $this->dba->table_get_relationships($table['tbl_name']);
-			$tables[$key]['relationships'] = $relationships;
-		}
-		*/
 		
 		$rows = $this->dba->table_get_rows($this->collection);
 		

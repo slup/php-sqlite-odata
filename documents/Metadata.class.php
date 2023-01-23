@@ -56,7 +56,7 @@ class Metadata {
 					foreach($table['relationships'] as $relationship) {
 						$relationships = $this->dba->table_get_relationships_between($table['tbl_name'], $relationship['table']);
 						$this->writer->startElement('NavigationProperty');
-						$this->writer->writeAttribute('Name', $relationship['table']); //print_r($relationships, TRUE)); 
+						$this->writer->writeAttribute('Name', $relationship['table']);
 						$this->writer->writeAttribute('Relationship', $this->model_name.'Model.'.$relationships[$table['tbl_name']]['name']);
 						$this->writer->writeAttribute('ToRole', $relationship['table']);
 						$this->writer->writeAttribute('FromRole', $table['tbl_name']);
@@ -97,14 +97,12 @@ class Metadata {
 							$this->writer->writeAttribute('Role', $table['tbl_name']);
 							//$this->writer->writeAttribute('Role', $table['tbl_name'].($relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "_1" : "_n"));
 							$this->writer->writeAttribute('Multiplicity', $relationships[$relationships[$table['tbl_name']]['toTable']]['type'] === 'entry' ? "1" : "*");
-							//$this->writer->writeAttribute('print_r', print_r($relationships, TRUE));
 							$this->writer->endElement(); 
 							$this->writer->startElement('End');
 							$this->writer->writeAttribute('Type', $this->model_name.'Model.'.$relationships[$table['tbl_name']]['toTable']);
 							$this->writer->writeAttribute('Role', $relationship['table']);
 							//$this->writer->writeAttribute('Role', $relationship['table'].($relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "_1" : "_n"));
 							$this->writer->writeAttribute('Multiplicity', $relationships[$relationships[$table['tbl_name']]['fromTable']]['type'] === 'entry' ? "1" : "*");
-							//$this->writer->writeAttribute('print_r', print_r($table['relationships'], TRUE));
 							$this->writer->endElement(); 
 							$this->writer->startElement('ReferentialConstraint');
 								$this->writer->startElement('Principal');

@@ -24,7 +24,7 @@
       $hashed_password = $ini_array[$user];
       $user_supplied_password = $_SERVER['PHP_AUTH_PW'];
       if (password_verify($user_supplied_password, $hashed_password)) {
-        # continue with normal processing
+        // continue with normal processing
       } else {
         echo 'Invalid credentials';
         exit;

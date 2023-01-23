@@ -37,10 +37,6 @@ class Entry {
 				);
 		}
 		
-		//$this->pk_column = $pk_column;
-		//$this->result_columns = $result_columns;
-		
-		
 		$row = $this->dba->table_get_entry($this->collection, $id);
 		
 		foreach ($columns as $column) {
@@ -51,19 +47,6 @@ class Entry {
 		$pk = $entry[$pk_column];
 		
 		$navigation_properties = $this->dba->table_get_relationships($this->collection);
-
-		
-		/*
-		$tables = $this->dba->get_tables();
-		
-		foreach ($tables as $key => $table) {
-			$columns = $this->dba->get_columns($table['tbl_name']);
-			$tables[$key]['columns'] = $columns;
-			$relationships = $this->dba->table_get_relationships($table['tbl_name']);
-			$tables[$key]['relationships'] = $relationships;
-		}
-		*/
-		
 		
 		$this->writer->openURI('php://output'); 
 		$this->writer->startDocument('1.0', 'utf-8'); 

@@ -11,6 +11,7 @@ Copy alongside a sqlite database and edit Config.class.php
 * Navigation properties based on foreign keys
 * Edm Datatypes
   * Int32, String, Boolean, DateTime
+* Optionally: Simple auth based on HTTP Basic Auth
 
 ## Roadmap
 * Use sqlite rowid as primary key

@@ -52,39 +52,6 @@ class DatabaseAnalyzer {
     
     public function table_get_rows_filtered($table_name, $filter) {
 		return $this->table_query_filtered("SELECT * FROM ${table_name} WHERE", $table_name, $filter);
-		/*
-		if ($this->table_exists($table_name)) {
-            $columns = $this->get_columns($table_name);
-            $column_names = array();
-            foreach ($columns as $column) {
-                $column_names[] = $column['name'];
-            }
-            
-            $query = "SELECT * FROM ${table_name} WHERE";
-            $filter_values = array();
-            foreach ($filter as $filter_column => $filter_value) {
-                if (!in_array($filter_column, $column_names)) {
-                    // ignoring non existing columns
-                    continue; 
-                }
-                // first element does not need "AND"
-                if ($filter_value !== reset($filter)) { 
-                    $query .= " AND ";
-                }
-                $query .= " ${filter_column} = ? ";
-                $filter_values[] = $filter_value;
-            }
-            
-            if (strpos($query, '?') === false) {
-                // if no valid filter value is given, nothing can be found
-                return array(); 
-            }
-            
-			$result = $this->database->prepare($query);
-			$result->execute($filter_values);
-			$rows = $result->fetchAll(PDO::FETCH_ASSOC);
-			return $rows;
-		}*/
 	}
 	
     public function table_get_pk_column($table_name) {
