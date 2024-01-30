@@ -1,0 +1,49 @@
+<mvc:View
+	controllerName="ch.slup.phpsqliteodata.ui5.controller.Detail"
+	displayBlock="true"
+	xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc">
+    <Page id="detail" title="Notes in Notebook \'{title}\' (id:{id})" showNavButton="true" navButtonPress=".detailBackPressed">
+        <headerContent>
+            <Button
+                id="noteEditButton"
+                icon="sap-icon://edit"
+                visible="{cfg>/notInDelete}"
+                press="onEditOrDoneButtonPress" />
+            <Button
+                id="noteDoneButton"
+                icon="sap-icon://accept"
+                visible="{cfg>/inDelete}"
+                press="onEditOrDoneButtonPress" />
+        </headerContent>
+        <content>
+            <List id="noteList" items="{Note}" delete="deleteElement" mode="{cfg>/noteListMode}" >
+                <StandardListItem title="{note} (id:{id}, notebookId:{notebookId})"/>
+            </List>
+            <form:SimpleForm
+                title=""
+                minWidth="800"
+                maxContainerCols="2"
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanL="3"
+                labelSpanM="3"
+                emptySpanL="4"
+                emptySpanM="4"
+                columnsL="1"
+                columnsM="1"
+                class="editableForm">
+                  <form:content>
+                    <Label text="Note"/>
+                    <Input id="addNote" value="{newNoteModel>/newNote}"/>
+                    <Button
+                      icon="sap-icon://add"
+                      text="Add"
+                      press=".addNote" />
+                  </form:content>
+              </form:SimpleForm>
+        </content>
+	</Page>
+</mvc:View>

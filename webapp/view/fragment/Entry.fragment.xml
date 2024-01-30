@@ -1,0 +1,26 @@
+<core:FragmentDefinition
+   xmlns="sap.m"
+   xmlns:core="sap.ui.core" >
+   <Dialog
+      id="newListDialog"
+      title="{i18n>newListTitle}">
+      <Input
+        id="listInput"
+        placeholder="{i18n>newListPlaceholder}"
+        value="{inputModel>/NewList/title}"
+        valueLiveUpdate="true"
+        submit=".onAddNewList">
+      </Input>
+      <beginButton>
+        <Button
+            text="{i18n>newListCreateText}"
+            type="Emphasized"
+            press=".onAddNewList" />
+      </beginButton>
+      <endButton>
+        <Button
+            text="{i18n>newListCancelText}"
+            press=".onCloseNewListDialog" />
+      </endButton>
+   </Dialog>
+</core:FragmentDefinition>

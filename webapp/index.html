@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PHP SQLite OData UI5</title>
+	<!-- 
+		https://openui5.netweaver.ondemand.com/resources/sap-ui-core.js 
+		https://openui5.netweaver.ondemand.com/1.71.53/resources/sap-ui-core.js
+	-->
+	<script id="sap-ui-bootstrap"
+		src="https://openui5.netweaver.ondemand.com/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_fiori_3"
+		data-sap-ui-resourceroots='{
+			"ch.slup.phpsqliteodata.ui5": "./"
+		}'
+		data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-async="true"
+		data-sap-ui-frameOptions="trusted">
+	</script>
+</head>
+
+<body class="sapUiBody">
+	<div data-sap-ui-component data-name="ch.slup.phpsqliteodata.ui5" data-id="container" data-settings='{"id" : "basicTemplate"}'></div>
+</body>
+</html>

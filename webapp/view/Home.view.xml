@@ -1,0 +1,56 @@
+<mvc:View
+	controllerName="ch.slup.phpsqliteodata.ui5.controller.Home"
+	displayBlock="true"
+	xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc">
+	<Page
+		id="master"
+		title="{i18n>title}">
+        <headerContent>
+            <Button
+                id="editButton"
+                icon="sap-icon://edit"
+                visible="{cfg>/notInDelete}"
+                press="onEditOrDoneButtonPress" />
+            <Button
+                id="doneButton"
+                icon="sap-icon://accept"
+                visible="{cfg>/inDelete}"
+                press="onEditOrDoneButtonPress" />
+        </headerContent>
+		<content>
+            <Panel headerText="Add notebook" expanded="false" expandable="true">
+                <form:SimpleForm
+                    minWidth="800"
+                    maxContainerCols="2"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    labelSpanL="3"
+                    labelSpanM="3"
+                    emptySpanL="4"
+                    emptySpanM="4"
+                    columnsL="1"
+                    columnsM="1"
+                    class="editableForm">
+                    <form:content>
+                        <Input
+                          value="{newNotebookModel>/newTitle}"
+                          placeholder="Notebook title"/>
+                        <Button
+                          icon="sap-icon://add"
+                          text="Add"
+                          press="addNotebook" />
+                    </form:content>
+                </form:SimpleForm>
+            </Panel>
+            <List id="notebookList" items="{/Notebook}" delete="deleteElement" mode="{cfg>/notebookListMode}" >
+                <StandardListItem
+                  title="{title}"
+                  icon="{sap-icon://add}"
+                  type="Navigation" press="notebookSelected" />
+            </List>
+        </content>
+    </Page>
+</mvc:View>
