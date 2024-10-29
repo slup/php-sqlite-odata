@@ -3,8 +3,14 @@
 namespace ch\slup\documents;
 
 class ServiceDocument {
+
+	protected $dba;
+	protected $writer;
+	protected $host;
+	protected $subdir;
+	protected $model_name;
 	
-	public function __construct($host='localhost', $subdir='', $model_name='', $db_analyzer) {
+	public function __construct($db_analyzer, $host='localhost', $subdir='', $model_name='') {
 		$this->dba = $db_analyzer;
 		$this->writer = new \XMLWriter(); 
 		$this->host = $host;

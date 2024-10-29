@@ -4,8 +4,15 @@ namespace ch\slup\documents;
 use Constant;
 
 class Entry {
+
+	protected $dba;
+	protected $writer;
+	protected $collection;
+	protected $service_base_path;
+	protected $model_name;
+	protected $query_options;
 	
-	public function __construct($collection='', $db_analyzer, $model_name='', $service_base_path='', $query_options=[]) {
+	public function __construct($db_analyzer, $collection='', $model_name='', $service_base_path='', $query_options=[]) {
 		$this->dba = $db_analyzer;
 		$this->writer = new \XMLWriter(); 
 		$this->collection = $collection;

@@ -41,13 +41,13 @@
   $router->map( 'GET', '/', function() use ($controller) { $controller->service_description(); });
   $router->map( 'GET', '/logout', function() use ($controller) { $controller->logout(Config::is_auth_enabled()); });
   $router->map( 'GET', '/hash/[a:value_to_hash]', function($value_to_hash) use ($controller) { $controller->hash($value_to_hash); });
-  $router->map( 'GET', '/[\$metadata:cmd]', function() use ($controller) { $controller->service_metadata(); });
+  $router->map( 'GET', '/[\$metadata:cmd]', function($cmd, $query_string_parameters) use ($controller) { $controller->service_metadata(); });
   $router->map( 'GET', '/[a:collection]', function($collection, $query_string_parameters = array()) use ($controller) { $controller->serve_collection($collection, $query_string_parameters); });
   $router->map( 'GET', '/[a:collection]/', function($collection, $query_string_parameters = array()) use ($controller) { $controller->serve_collection($collection, $query_string_parameters); });
-  $router->map( 'GET', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->serve_entry($collection, $id); });
-  $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]', function($collection, $id, $related_collection) use ($controller) { $controller->serve_related($collection, $id, $related_collection); });
-  $router->map( 'GET', '/[a:collection]/[\$count:count]', function($collection) use ($controller) { $controller->count_collection($collection); });
-  $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]/[\$count:count]', function($collection, $id, $related_collection) use ($controller) { $controller->count_related($collection, $id, $related_collection); });
+  $router->map( 'GET', '/[a:collection]\([a:id]\)', function($collection, $id, $query_string_parameters = array()) use ($controller) { $controller->serve_entry($collection, $id); });
+  $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]', function($collection, $id, $related_collection, $query_string_parameters = array()) use ($controller) { $controller->serve_related($collection, $id, $related_collection); });
+  $router->map( 'GET', '/[a:collection]/[\$count:count]', function($collection, $count) use ($controller) { $controller->count_collection($collection); });
+  $router->map( 'GET', '/[a:collection]\([a:id]\)/[a:related_collection]/[\$count:count]', function($collection, $id, $related_collection, $count) use ($controller) { $controller->count_related($collection, $id, $related_collection); });
   
   $router->map( 'PUT', '/[a:collection]\([a:id]\)', function($collection, $id) use ($controller) { $controller->update_entry($collection, $id); });
   $router->map( 'POST', '/[a:collection]', function($collection) use ($controller) { $controller->create_entry($collection); });
@@ -57,6 +57,6 @@
   $match = $router->match();
   
   if( $match && is_callable( $match['target'] ) ) {
-      call_user_func_array( $match['target'], $match['params'] ); 
+    call_user_func_array( $match['target'], $match['params'] ); 
   }
 ?>

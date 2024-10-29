@@ -4,8 +4,12 @@ namespace ch\slup\documents;
 use Constant;
 
 class Metadata {
+
+	protected $dba;
+	protected $writer;
+	protected $model_name;
 	
-	public function __construct($model_name='', $db_analyzer) {
+	public function __construct($db_analyzer, $model_name='') {
 		$this->dba = $db_analyzer;
 		$this->writer = new \XMLWriter(); 
 		$this->model_name = $model_name;

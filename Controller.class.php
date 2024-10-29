@@ -34,12 +34,12 @@ class Controller {
     }
 
     public function service_description() {
-        $sd = new ch\slup\documents\ServiceDocument($this->host, $this->subdir, $this->model_name, new DatabaseAnalyzer($this->database));
+        $sd = new ch\slup\documents\ServiceDocument(new DatabaseAnalyzer($this->database), $this->host, $this->subdir, $this->model_name);
         $sd->create_document();
     }
     
     public function service_metadata() {
-        $metadata = new ch\slup\documents\Metadata($this->model_name, new DatabaseAnalyzer($this->database));
+        $metadata = new ch\slup\documents\Metadata(new DatabaseAnalyzer($this->database), $this->model_name);
         $metadata->create_document();
     }
     
@@ -48,12 +48,12 @@ class Controller {
     }
     
     public function serve_collection_filtered($collection, $query_options, $filters) {
-        $collectionDocument = new ch\slup\documents\Collection($collection, new DatabaseAnalyzer($this->database), $this->model_name, $this->service_base_path, $query_options, $filters);
+        $collectionDocument = new ch\slup\documents\Collection(new DatabaseAnalyzer($this->database), $collection, $this->model_name, $this->service_base_path, $query_options, $filters);
         $collectionDocument->create_document();
     }
     
     public function serve_entry($collection, $id) {
-        $entryDocument = new ch\slup\documents\Entry($collection, new DatabaseAnalyzer($this->database), $this->model_name, $this->service_base_path);
+        $entryDocument = new ch\slup\documents\Entry(new DatabaseAnalyzer($this->database), $collection, $this->model_name, $this->service_base_path);
         $entryDocument->create_document($id);
     }
     

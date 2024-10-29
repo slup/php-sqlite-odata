@@ -2,6 +2,7 @@
 require_once 'Constant.class.php';
 class DatabaseAnalyzer {
 	protected $database_name = '';
+	protected $database;
 	/**
 	  * Creates DatabaseAnalyzer for specific sqlite database.
 	  *
@@ -26,7 +27,7 @@ class DatabaseAnalyzer {
 	}
 	
 	public function get_columns($table_name) {
-		$result = $this->database->prepare("PRAGMA table_info(${table_name})");
+		$result = $this->database->prepare("PRAGMA table_info({$table_name})");
 		$result->execute();
 		$columns = $result->fetchAll(PDO::FETCH_ASSOC);
 		
@@ -43,7 +44,7 @@ class DatabaseAnalyzer {
 	
 	public function table_get_rows($table_name) {
 		if ($this->table_exists($table_name)) {
-			$result = $this->database->prepare("SELECT * FROM ${table_name}");
+			$result = $this->database->prepare("SELECT * FROM {$table_name}");
 			$result->execute();
 			$rows = $result->fetchAll(PDO::FETCH_ASSOC);
 			return $rows;
@@ -51,7 +52,7 @@ class DatabaseAnalyzer {
 	}
     
     public function table_get_rows_filtered($table_name, $filter) {
-		return $this->table_query_filtered("SELECT * FROM ${table_name} WHERE", $table_name, $filter);
+		return $this->table_query_filtered("SELECT * FROM {$table_name} WHERE", $table_name, $filter);
 	}
 	
     public function table_get_pk_column($table_name) {
@@ -80,7 +81,7 @@ class DatabaseAnalyzer {
                 return array();
             }
             
-			$result = $this->database->prepare("SELECT * FROM ${table_name} WHERE ${pk_column} = ?");
+			$result = $this->database->prepare("SELECT * FROM {$table_name} WHERE {$pk_column} = ?");
 			$result->execute(array($id));
 			$row = $result->fetch(PDO::FETCH_ASSOC);
 			return $row;
@@ -89,7 +90,7 @@ class DatabaseAnalyzer {
 	
 	public function table_row_count($table_name) {
 		if ($this->table_exists($table_name)) {
-			$result = $this->database->prepare("SELECT COUNT(*) FROM ${table_name}");
+			$result = $this->database->prepare("SELECT COUNT(*) FROM {$table_name}");
 			$result->execute();
 			
 			$count = $result->fetch(PDO::FETCH_COLUMN, 0);
@@ -98,7 +99,7 @@ class DatabaseAnalyzer {
 	}
 	
 	public function table_row_count_filtered($table_name, $filter) {
-			$count_array = $this->table_query_filtered("SELECT COUNT(*) AS count FROM ${table_name} WHERE", $table_name, $filter);
+			$count_array = $this->table_query_filtered("SELECT COUNT(*) AS count FROM {$table_name} WHERE", $table_name, $filter);
 			if ($count_array) {
 				return $count_array[0]['count'];
 			} else {
@@ -125,7 +126,7 @@ class DatabaseAnalyzer {
                 if ($filter_value !== reset($filter)) { 
                     $query .= " AND ";
                 }
-                $query .= " ${filter_column} = ? ";
+                $query .= " {$filter_column} = ? ";
                 $filter_values[] = $filter_value;
             }
             
@@ -167,7 +168,7 @@ class DatabaseAnalyzer {
 			return;
 		}
 		
-		$query = "UPDATE ${table_name} SET ";
+		$query = "UPDATE {$table_name} SET ";
 		$update_values = array();
 		
 		foreach($columns as $column) {
@@ -177,7 +178,7 @@ class DatabaseAnalyzer {
 			}
 			
 			if (array_key_exists($name, $new_values)) {
-				$query .= "${name} = ?, ";
+				$query .= "{$name} = ?, ";
 				$update_values[] = DataConverter::odata2Database($column, $new_values[$name]);
 			} else {
 				continue;
@@ -186,7 +187,7 @@ class DatabaseAnalyzer {
 		
 		$query = rtrim($query, ', ');
 		
-		$query .= " WHERE ${pk_column} = ?";
+		$query .= " WHERE {$pk_column} = ?";
 		$update_values[] = $new_values[$pk_column];
 		
 		$result = $this->database->prepare($query);
@@ -211,13 +212,13 @@ class DatabaseAnalyzer {
 		}
 		
 		$insert_values = array();
-		$query = "INSERT INTO ${table_name} ( ";
+		$query = "INSERT INTO {$table_name} ( ";
 		
 		foreach($columns as $column) {
 			$name = $column['name'];
 			
 			if (array_key_exists($name, $new_values)) {
-				$query .= "${name}, ";
+				$query .= "{$name}, ";
 				$insert_values[] = DataConverter::odata2Database($column, $new_values[$name]);
 			} else {
 				continue;
@@ -244,14 +245,14 @@ class DatabaseAnalyzer {
 		}
 		$pk_column = $this->get_table_pk_column($table_name);
 		
-		$result = $this->database->prepare("DELETE FROM ${table_name} WHERE ${pk_column} = ?");
+		$result = $this->database->prepare("DELETE FROM {$table_name} WHERE {$pk_column} = ?");
 		$result->execute(array($id));
 		return true;
 	}
 	
 	private function table_get_next_key($table_name, $pk_column) {
 		if ($this->table_exists($table_name)) {
-			$result = $this->database->prepare("SELECT MAX(${pk_column}) FROM ${table_name}");
+			$result = $this->database->prepare("SELECT MAX({$pk_column}) FROM {$table_name}");
 			$result->execute();
 			
 			$count = $result->fetch(PDO::FETCH_COLUMN, 0);
@@ -261,7 +262,7 @@ class DatabaseAnalyzer {
     
     public function table_get_foreign_keys($table_name) {
 		if ($this->table_exists($table_name)) {
-			$result = $this->database->prepare("PRAGMA foreign_key_list(${table_name})");
+			$result = $this->database->prepare("PRAGMA foreign_key_list({$table_name})");
 			$result->execute();
 			
 			$foreign_keys = $result->fetchAll(PDO::FETCH_ASSOC);

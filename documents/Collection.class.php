@@ -6,8 +6,20 @@ use ch\slup\documents;
 
 
 class Collection {
+
+	protected $dba;
+	protected $writer;
+	protected $collection;
+	protected $service_base_path;
+	protected $model_name;
+	protected $query_options;
+	protected $filters;
+	protected $pk_column;
+	protected $result_columns;
+	protected $entries;
+	protected $navigation_properties;
 	
-	public function __construct($collection='', $db_analyzer, $model_name='', $service_base_path='', $query_options=[], $filters=[]) {
+	public function __construct($db_analyzer, $collection='', $model_name='', $service_base_path='', $query_options=[], $filters=[]) {
 		$this->dba = $db_analyzer;
 		$this->writer = new \XMLWriter(); 
 		$this->collection = $collection;
@@ -90,7 +102,7 @@ class Collection {
 			$this->writer->writeAttribute('href', $this->collection);
 			$this->writer->endElement();
 			
-			$entryDocument = new Entry($this->collection, $this->dba, $this->model_name, $this->service_base_path);
+			$entryDocument = new Entry($this->dba, $this->collection, $this->model_name, $this->service_base_path);
 			//elements
 			foreach($this->entries as $entry) { 
 				$this->writer->startElement('entry');
