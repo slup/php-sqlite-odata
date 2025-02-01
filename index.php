@@ -41,7 +41,7 @@
   $router->map( 'GET', '/', function() use ($controller) { $controller->service_description(); });
   $router->map( 'GET', '/logout', function() use ($controller) { $controller->logout(Config::is_auth_enabled()); });
   $router->map( 'GET', '/hash/[a:value_to_hash]', function($value_to_hash) use ($controller) { $controller->hash($value_to_hash); });
-  $router->map( 'GET', '/[\$metadata:cmd]', function($cmd, $query_string_parameters) use ($controller) { $controller->service_metadata(); });
+  $router->map( 'GET', '/[\$metadata:cmd]', function($cmd, $query_string_parameters = array()) use ($controller) { $controller->service_metadata(); });
   $router->map( 'GET', '/[a:collection]', function($collection, $query_string_parameters = array()) use ($controller) { $controller->serve_collection($collection, $query_string_parameters); });
   $router->map( 'GET', '/[a:collection]/', function($collection, $query_string_parameters = array()) use ($controller) { $controller->serve_collection($collection, $query_string_parameters); });
   $router->map( 'GET', '/[a:collection]\([a:id]\)', function($collection, $id, $query_string_parameters = array()) use ($controller) { $controller->serve_entry($collection, $id); });
